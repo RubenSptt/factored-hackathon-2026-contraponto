@@ -1,0 +1,13 @@
+{
+  "name": "banking-system-agent",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AgentCore CLI workspace for the Strands Card Support agent.",
+  "scripts": {
+    "agentcore": "agentcore",
+    "agentcore:version": "agentcore --version"
+  },
+  "devDependencies": {
+    "@aws/agentcore": "latest"
+  }
+}

@@ -1,0 +1,5 @@
+node_modules/
+CardSupportStrands/agentcore/.cli/logs/
+CardSupportStrands/.venv/
+CardSupportStrands/**/__pycache__/
+CardSupportStrands/**/.pytest_cache/

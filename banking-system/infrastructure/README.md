@@ -4,10 +4,8 @@ AWS CDK infrastructure for the banking system.
 
 Phase 1 starts with a minimal CDK foundation. The primary AgentCore Runtime is
 now developed and deployed with the official AgentCore CLI using Strands SDK.
-The existing CDK-created AgentCore Runtime is temporary and should be destroyed
-after the AgentCore CLI Strands runtime is validated. CDK does not deploy
-Secrets Manager, DynamoDB, API Gateway, Cognito, Lambda banking tools, or
-Amplify yet.
+CDK does not deploy AgentCore Runtime, Secrets Manager, DynamoDB, API Gateway,
+Cognito, Lambda banking tools, or Amplify yet.
 
 ## AWS Profile
 
@@ -73,6 +71,12 @@ npx aws-cdk@latest deploy --profile bedrock-dev-user
 AgentCore runtime deployment is handled by `agentcore deploy` under
 `banking-system/agent` during early Strands development.
 
+At this stage, the CDK app should list only:
+
+```text
+banking-system-dev-foundation
+```
+
 ## Runtime Configuration
 
 - Development AWS region: `us-east-1`
@@ -81,15 +85,13 @@ AgentCore runtime deployment is handled by `agentcore deploy` under
 - Sensitive values: AWS Secrets Manager, introduced in a later Phase 1 block
 - Non-sensitive values: CDK context, safe defaults, or documented local config
 
-## Temporary CDK Runtime Cleanup
+## AgentCore Runtime
 
-After the AgentCore CLI Strands runtime is deployed and successfully invoked,
-destroy the temporary CDK-created runtime stack to avoid duplicate runtimes and
-confusing logs:
+The AgentCore Runtime is managed by the AgentCore CLI project under:
 
-```powershell
-npx aws-cdk@latest destroy banking-system-dev-agent --profile bedrock-dev-user
-```
+`banking-system/agent/CardSupportStrands/`
 
-Keep `banking-system-dev-foundation` unless a later phase explicitly replaces
-or removes the CDK foundation.
+Use `npx agentcore deploy`, `npx agentcore invoke`, `npx agentcore logs`, and
+`npx agentcore traces` from that generated project. Do not recreate an
+AgentCore runtime from this CDK app unless a later phase intentionally migrates
+the validated Strands runtime contract back to CDK.
