@@ -3,6 +3,8 @@
   "context": {
     "project_name": "banking-system",
     "environment": "dev",
-    "aws_region": "us-east-1"
+    "aws_region": "us-east-1",
+    "bedrock_model_id": "amazon.nova-micro-v1:0",
+    "local_invoker_user_name": "bedrock-dev-user"
   }
 }
