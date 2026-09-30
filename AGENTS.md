@@ -39,6 +39,7 @@ Current target architecture:
 - Public API: Amazon API Gateway
 - Backend: Python + FastAPI running on AWS Lambda
 - Agent runtime: Amazon Bedrock AgentCore Runtime
+- Agent framework: Strands SDK
 - Models: Amazon Bedrock
 - Agent tools: AgentCore Gateway + AWS Lambda
 - Agent memory: AgentCore Memory
@@ -117,6 +118,13 @@ Infrastructure code lives under:
 
 Use AWS CDK with Python for infrastructure code.
 
+Exception for the early AgentCore agent runtime: use the official AgentCore CLI
+to scaffold, develop, deploy, and invoke the Strands-based agent while the core
+agent loop is being validated. This is a reproducible managed workflow, not a
+manual console configuration. General AWS infrastructure remains CDK-managed,
+and the AgentCore runtime can be migrated back to CDK after the Strands runtime
+contract is proven.
+
 The CDK app under `banking-system/infrastructure/` should use Python 3.13
 and `uv` unless a specific CDK limitation requires otherwise.
 
@@ -193,6 +201,9 @@ Mask sensitive values in responses and logs.
 ---
 
 ## Agent Rules
+
+Implement the agent with Strands SDK running on Amazon Bedrock AgentCore
+Runtime.
 
 The agent may reason about what should happen next.
 

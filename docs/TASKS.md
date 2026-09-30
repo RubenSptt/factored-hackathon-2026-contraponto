@@ -16,15 +16,19 @@
 - [ ] Initialize AWS CDK Python project
 - [ ] Define `dev` environment configuration
 - [ ] Create initial Foundation stack
-- [ ] Create required Secrets Manager resources
-- [ ] Define initial IAM roles and least-privilege policies
-- [ ] Create AgentCore infrastructure
-- [ ] Deploy minimal AgentCore Runtime
-- [ ] Connect AgentCore to Bedrock model
-- [ ] Invoke deployed agent from local environment
-- [ ] Verify AgentCore logs and traces
+- [ ] Install and verify AgentCore CLI as a local npm dev dependency under `banking-system/agent`
+- [ ] Scaffold Strands agent with AgentCore CLI
+- [ ] Configure Bedrock model for the Strands agent
+- [ ] Run local AgentCore development flow with `npx agentcore dev`
+- [ ] Deploy Strands agent runtime with `npx agentcore deploy`
+- [ ] Invoke deployed agent with `npx agentcore invoke`
+- [ ] Verify AgentCore logs and traces with CLI commands
+- [ ] Remove the temporary CDK-created AgentCore runtime after the CLI runtime is validated
+- [ ] Create required Secrets Manager resources when concrete secrets are known
+- [ ] Define initial IAM roles and least-privilege policies when required by the next vertical slice
 
-Milestone: local code can successfully invoke the deployed AgentCore agent.
+Milestone: local development can successfully invoke the deployed Strands agent
+on AgentCore Runtime using AgentCore CLI.
 
 ## Phase 2 — Data Exploration and Preparation
 

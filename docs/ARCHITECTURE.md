@@ -8,12 +8,13 @@ Local:
 
 - Next.js frontend
 - FastAPI backend
+- AgentCore CLI local development for the Strands agent
 - EDA / DuckDB
 - unit and integration tests
 
 AWS Dev:
 
-- Bedrock AgentCore Runtime
+- Bedrock AgentCore Runtime deployed by AgentCore CLI during early agent work
 - Amazon Bedrock models
 - AgentCore Gateway and Lambda tools when required
 - DynamoDB development data when required
@@ -29,6 +30,8 @@ FastAPI (localhost)
     ↓
 Bedrock AgentCore Runtime (AWS)
     ↓
+Strands agent
+    ↓
 AgentCore Gateway
     ↓
 Lambda Tools
@@ -36,6 +39,9 @@ Lambda Tools
 DynamoDB
 
 AgentCore should be integrated and tested against AWS from the beginning.
+During the initial AgentCore phase, the agent runtime is scaffolded, deployed,
+and invoked with the official AgentCore CLI using Strands SDK. CDK continues to
+manage foundational infrastructure and later shared AWS resources.
 
 Frontend hosting, Cognito, API Gateway and FastAPI Lambda deployment are
 introduced after the core workflows are validated locally.
@@ -55,6 +61,8 @@ API Gateway
 FastAPI / Lambda
  ↓
 Bedrock AgentCore Runtime
+ ↓
+Strands agent
  ↓
 AgentCore Gateway
  ├── read banking tools
@@ -126,6 +134,9 @@ Responsible for:
 - clarification
 - escalation reasoning
 
+The agent implementation uses Strands SDK on AgentCore Runtime. It orchestrates
+conversation and tool use, but does not own authorization or banking facts.
+
 Not responsible for authorization.
 
 ### Banking Tools
@@ -169,13 +180,20 @@ AWS infrastructure is managed using AWS CDK under:
 
 The infrastructure project uses AWS CDK with Python.
 
+Early AgentCore Runtime deployment is the exception: the Strands agent runtime
+is managed with the official AgentCore CLI until the agent loop and deployment
+contract are validated. This keeps `agentcore dev`, `agentcore deploy`,
+`agentcore invoke`, logs, and traces aligned with the official Strands workflow.
+
 Infrastructure is introduced incrementally as required.
 
 Initial infrastructure should focus on:
 
-- AgentCore
 - required IAM permissions
 - Secrets Manager
+
+The initial agent runtime itself is created by AgentCore CLI. CDK should not
+create a parallel AgentCore runtime once the CLI runtime is validated.
 
 Additional resources such as DynamoDB, RAG infrastructure, API Gateway,
 Cognito and application hosting are added when their corresponding
