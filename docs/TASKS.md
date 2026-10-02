@@ -2,28 +2,28 @@
 
 ## Phase 0 — Repository Foundation
 
-- [ ] Create monorepo structure
-- [ ] Configure Python 3.13 environment
-- [ ] Configure frontend
-- [ ] Configure Ruff
-- [ ] Configure pytest
-- [ ] Configure TypeScript strict mode
-- [ ] Add environment configuration
-- [ ] Add local development instructions
+- [x] Create monorepo structure
+- [x] Configure Python 3.13 environment
+- [x] Configure frontend
+- [x] Configure Ruff
+- [x] Configure pytest
+- [x] Configure TypeScript strict mode
+- [x] Add environment configuration
+- [x] Add local development instructions
 
 ## Phase 1 — AWS Development Foundation
 
-- [ ] Initialize AWS CDK Python project
-- [ ] Define `dev` environment configuration
-- [ ] Create initial Foundation stack
-- [ ] Install and verify AgentCore CLI as a local npm dev dependency under `banking-system/agent`
-- [ ] Scaffold Strands agent with AgentCore CLI
-- [ ] Configure Bedrock model for the Strands agent
-- [ ] Run local AgentCore development flow with `npx agentcore dev`
-- [ ] Deploy Strands agent runtime with `npx agentcore deploy`
-- [ ] Invoke deployed agent with `npx agentcore invoke`
-- [ ] Verify AgentCore logs and traces with CLI commands
-- [ ] Remove the temporary CDK-created AgentCore runtime after the CLI runtime is validated
+- [x] Initialize AWS CDK Python project
+- [x] Define `dev` environment configuration
+- [x] Create initial Foundation stack
+- [x] Install and verify AgentCore CLI as a local npm dev dependency under `banking-system/agent`
+- [x] Scaffold Strands agent with AgentCore CLI
+- [x] Configure Bedrock model for the Strands agent
+- [x] Run local AgentCore development flow with `npx agentcore dev`
+- [x] Deploy Strands agent runtime with `npx agentcore deploy`
+- [x] Invoke deployed agent with `npx agentcore invoke`
+- [x] Verify AgentCore logs and traces with CLI commands
+- [x] Remove the temporary CDK-created AgentCore runtime after the CLI runtime is validated
 - [ ] Create required Secrets Manager resources when concrete secrets are known
 - [ ] Define initial IAM roles and least-privilege policies when required by the next vertical slice
 
