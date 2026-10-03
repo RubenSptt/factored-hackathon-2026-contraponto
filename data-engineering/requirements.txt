@@ -1,0 +1,8 @@
+snowflake-connector-python>=4.7.5
+snowflake-sqlalchemy>=1.11.1
+# snowflake-sqlalchemy 1.11.x is not compatible with SQLAlchemy 2.1 (import fails)
+sqlalchemy>=2.0,<2.1
+python-dotenv>=1.2.3
+pandas>=2.2
+pyarrow>=17.0
+pydantic>=2.8

@@ -1,0 +1,13 @@
+# Local outputs of the Snowflake pipeline (rebuilt by rerunning it)
+runs/
+data/
+
+# Credentials live in ~/.config/datathon/.env, never here
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+.venv/

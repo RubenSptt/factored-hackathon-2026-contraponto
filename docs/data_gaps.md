@@ -1,0 +1,24 @@
+# Data gaps and limitations
+
+What the hackathon dataset cannot prove, and how the prototype handles each
+gap. Numbers are the "Gap N" references used in the SQL headers under
+[`data-engineering/analysis/`](../data-engineering/analysis/). Evidence comes
+from the exploration (Q01–Q11) and the stage 1 profile
+([`profile_core.md`](../data-engineering/docs/profile_core.md)).
+
+Documenting these gaps is part of the design: it tells the reader which claims
+are backed by data and which are team assumptions.
+
+| # | Gap | Evidence | Impact on the prototype | Mitigation |
+| --- | --- | --- | --- | --- |
+| 1 | No Portuguese data | The whole dataset is in Spanish | Portuguese answers cannot be validated against real data | State the difference between "the model can answer in Portuguese" and "there is no data to validate it"; include Portuguese cases in the team's own evaluation set |
+| 2 | Free text is template text | `call_transcripts.customer_text` has only 2 reasons (credit card balance 85,910; savings balance 85,411) across 100% of 171,321 rows, unrelated to the call category. `complaints.description` has 1 text per category. `agent_text` has 11 balance phrases with unreplaced variables (`{monto} {moneda}`). Raw lines reconcile exactly with loaded records (Q04, Q05) | The text cannot train or evaluate language understanding or routing | Build an own evaluation set from the business definition of the workflow |
+| 3 | Redundant, broad taxonomy | `reason_category` = `contact_reason` = `main_topics` (6 values, same shares); `complaints.category` has 5 values with one dominant subcategory each (Q02, Q04) | No field separates the 4 candidate workflows | Category → workflow mapping is an explicit, documented team assumption |
+| 4 | Enrichment fields carry no signal | `detected_intents`: 95% `consulta_general`, 5% null; `detected_keywords` always "cuenta, servicio, banco"; `mentioned_entities.products` contradicts the text (Q04) | Not usable as features or ground truth | Excluded from analysis and modelling |
+| 5 | Case resolution time ≠ conversation turns | "Cargo no reconocido": 15.4 days mean resolution, 20.4% SLA breach (Q03) | Slow back-office cases do not measure conversational load | Measure separately: turns and latency (agent) vs. case SLA (business process) |
+| 6 | Data dictionary counts are approximate | `call_transcripts` 171,321 rows in 1,097 files, 0 errors, 0 duplicates (dictionary: 200K); `transactions` 4,425,008 (5M); `complaints` 67,095 (80K) (Q05, stage 1) | Quoting dictionary figures would be wrong | Use loaded counts only |
+| 7 | Labels have no learnable signal | `was_escalated` ~10% flat across every cut; `requires_followup` and `was_resolved` depend only on the category; `is_fraud` is a cutoff on `fraud_score` (~35), unexplained by channel, type, status, country or amount (Q06, Q07) | A supervised model would only reproduce rules or leak the label | Pre-trained LLM + deterministic tools; human escalation as explicit business rules |
+| 8 | `transactions` field quality | `amount_usd` 57% null: 100% of USD rows plus 5% of COP/ARS rows. The source converts at a fixed rate per currency (1 USD = 350 ARS = 4,000 COP), not with the daily table (±2%). `fraud_score` 20% null. Country spelled "Mexico" and "México". `product_type` in Spanish although the dictionary documents English | USD totals and country queries fail without cleaning | Done in stage 1: USD rows use `amount`; COP/ARS use the source's implied fixed rate (daily table kept for reference); "Mexico" → "México"; method recorded per row |
+| 9 | No bank knowledge base | No policies, fees, FAQ or procedures in the dataset | Retrieval has nothing to index | The team writes its own documents in Spanish and Portuguese, versioned in the repo and declared as original content |
+| 10 | Complaint–product link is invalid | All 44,570 complaints that name a product name another customer's product; the other 22,525 name none (stage 1 profile) | No complaint is linked to the right card; using the field would point the agent at someone else's card | `affected_product_id` is not exported; the agent links the case to the authenticated customer's card and transaction |
+| 11 | No Mexican pesos; injected nulls | No transaction or product is in MXN (Mexican customers operate in USD). Nulls appear at fixed rates (5%, 10%, 20%) spread evenly across every cut | Gaps carry no signal; the agent will meet purchases without merchant (5%) and transactions without fraud score (20%) | Flag in `dq_flags`, never impute; the agent says "not recorded" instead of guessing |
