@@ -53,6 +53,35 @@
   line-height: 1.55;
 }
 
+.headerControls {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.resetButton {
+  padding: 6px 12px;
+  border: 1px solid rgb(255 255 255 / 24%);
+  border-radius: 999px;
+  color: #e2e8f0;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  background: transparent;
+  cursor: pointer;
+}
+
+.resetButton:hover:not(:disabled) {
+  background: rgb(255 255 255 / 10%);
+}
+
+.resetButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 .localeSwitch {
   flex-shrink: 0;
   display: flex;
@@ -79,6 +108,7 @@
   background: #e0f2fe;
 }
 
+.resetButton:focus-visible,
 .localeButton:focus-visible,
 .suggestion:focus-visible,
 .sendButton:focus-visible {
@@ -95,6 +125,24 @@
   gap: 14px;
   padding: 24px 32px;
   overflow-y: auto;
+}
+
+.turn {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.userTurn {
+  align-items: flex-end;
+}
+
+.assistantTurn {
+  align-items: flex-start;
+}
+
+.actionSlot {
+  width: min(100%, 560px);
 }
 
 .bubble {
@@ -268,6 +316,10 @@
   .header {
     flex-direction: column;
     padding: 20px;
+  }
+
+  .headerControls {
+    align-items: flex-start;
   }
 
   .messages,

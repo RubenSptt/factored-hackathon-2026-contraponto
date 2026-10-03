@@ -46,16 +46,20 @@ All three must pass. Stop `npm run dev` before `npm run build`.
 
 ```text
 app/
-├── layout.tsx              Root layout, fonts and metadata
-├── page.tsx                Home route: renders the chat
+├── layout.tsx                Root layout, fonts and metadata
+├── page.tsx                  Home route: renders the chat
 ├── page.module.css
-├── _components/            UI components (private folder, not a route)
-│   ├── ChatPanel.tsx       Chat, suggestions, locale switch, composer
-│   └── ChatPanel.module.css
-└── _lib/                   Non-UI logic (private folder, not a route)
-    ├── i18n.ts             Interface strings in Spanish and Portuguese
-    ├── card-number-guard.ts  Blocks sending a full card number
-    └── chat-transport.ts   Temporary backend placeholder (see below)
+├── _components/              UI components (private folder, not a route)
+│   ├── ChatPanel.tsx         Conversation, locale switch, composer, session
+│   ├── ActionCard.tsx        Renders each structured UI action from the backend
+│   └── *.module.css
+└── _lib/                     Non-UI logic (private folder, not a route)
+    ├── api/
+    │   ├── contracts.ts      Request/response types shared with FastAPI
+    │   ├── mock-api.ts       In-memory mock of the backend (demo scenario)
+    │   └── index.ts          Exports the client the UI uses
+    ├── i18n.ts               Interface strings in Spanish and Portuguese
+    └── card-number-guard.ts  Blocks sending a full card number
 ```
 
 Folders that start with `_` are private folders in the App Router: Next.js
@@ -67,11 +71,45 @@ The target flow is `Next.js -> FastAPI -> Bedrock AgentCore` (see
 [`docs/ARCHITECTURE.md`](../../docs/ARCHITECTURE.md)). The frontend never calls
 the agent, AWS services or any tool directly.
 
-The FastAPI chat endpoint does not exist yet and its request/response contract
-is under team review. Until it is agreed, `app/_lib/chat-transport.ts` returns a
-fixed reply saying that banking systems are not connected, which matches what
-the deployed agent says today. The UI depends only on `sendChatMessage`, so
-connecting the real API means replacing that one file.
+The FastAPI endpoints do not exist yet, so the UI runs against an in-memory
+mock (`app/_lib/api/mock-api.ts`) that follows the contract in
+`app/_lib/api/contracts.ts`. To connect the real backend, write an HTTP client
+that implements `CardSupportApi` and export it from `app/_lib/api/index.ts`;
+no component changes are needed.
+
+### Contract (proposed, pending backend confirmation)
+
+Field names are snake_case to match Pydantic models and the handoff JSON in
+`PRODUCT.md`. No request carries `customer_id`.
+
+| Endpoint | Request | Purpose |
+| --- | --- | --- |
+| `POST /chat/messages` | `session_id`, `message`, `locale` | Customer message |
+| `POST /chat/verification` | `session_id`, `challenge_id`, `answer`, `locale` | Answer to a step-up question |
+| `POST /chat/confirmations` | `session_id`, `confirmation_id`, `decision`, `locale` | Confirm or cancel a sensitive action |
+
+Every endpoint returns `{ reply, ui_actions }`: the agent's text plus a list of
+structured actions the UI knows how to render.
+
+| `ui_actions[].type` | What the UI shows |
+| --- | --- |
+| `step_up_verification` | Security question with an answer field; the answer is not echoed into the transcript |
+| `transaction_review` | Recent transactions of the affected card (`city: null` is shown as "not recorded") |
+| `confirm_action` | Explicit confirm/cancel for `block_card` |
+| `action_result` | Outcome of the action; `verified: true` only when the backend re-read the card status |
+| `handoff_created` | Case summary for the customer; the full `HumanHandoff` object goes to the human agent |
+
+### Demo scenario in the mock
+
+1. Report an incident ("Me robaron la billetera y veo una compra que no hice").
+2. Answer the security question with any city: verification passes. Answer
+   "no sé" / "não sei" to see the failed-verification path, which escalates to
+   a human without touching the card.
+3. Reply to the transaction review, then confirm or cancel the block.
+4. Confirming returns a verified block result plus a human handoff; cancelling
+   returns a handoff only.
+
+All mock data is fictional; nothing is read from the hackathon dataset.
 
 ## Security rules for the frontend
 
@@ -96,6 +134,6 @@ is missing.
 
 | Branch | Scope | Status |
 | --- | --- | --- |
-| `feature/frontend-chat-ui` | Chat, locale switch, card-number guard; then identity check, block confirmation, verified result and human handoff summary | In progress |
+| `feature/frontend-chat-ui` | Chat, locale switch, card-number guard, API contract and mock, identity check, transaction review, block confirmation, verified result and handoff summary | Ready for review |
 | `feature/frontend-card-dashboard` | Card list and card details | Planned |
 | `feature/frontend-agent-tickets` | Human agent ticket queue and detail | Planned |

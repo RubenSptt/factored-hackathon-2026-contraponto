@@ -3,25 +3,41 @@
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent, KeyboardEvent } from "react";
 
+import { cardSupportApi } from "../_lib/api";
+import type { ChatResponse, UiAction } from "../_lib/api";
 import { containsFullCardNumber } from "../_lib/card-number-guard";
-import { sendChatMessage } from "../_lib/chat-transport";
-import { DEFAULT_LOCALE, dictionaries, isLocale, LOCALES } from "../_lib/i18n";
+import { DEFAULT_LOCALE, dictionaries, isLocale, LOCALE_TAGS, LOCALES } from "../_lib/i18n";
 import type { Locale } from "../_lib/i18n";
+import ActionCard from "./ActionCard";
+import type { Resolution } from "./ActionCard";
 import styles from "./ChatPanel.module.css";
-
-type ChatRole = "user" | "assistant";
 
 type ChatMessage = {
   id: string;
-  role: ChatRole;
+  role: "user" | "assistant";
   text: string;
+  actions: UiAction[];
 };
 
 type Notice = "sendError" | "cardNumberWarning" | null;
 
+function withoutKey(record: Record<string, Resolution>, key: string) {
+  const copy = { ...record };
+  delete copy[key];
+  return copy;
+}
+
+function actionKey(action: UiAction): string | null {
+  if (action.type === "step_up_verification") return action.challenge_id;
+  if (action.type === "confirm_action") return action.confirmation_id;
+  return null;
+}
+
 export default function ChatPanel() {
   const [locale, setLocale] = useState<Locale>(DEFAULT_LOCALE);
+  const [sessionId, setSessionId] = useState(() => crypto.randomUUID());
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [resolutions, setResolutions] = useState<Record<string, Resolution>>({});
   const [draft, setDraft] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [notice, setNotice] = useState<Notice>(null);
@@ -31,14 +47,33 @@ export default function ChatPanel() {
 
   // Keep the document language in sync for screen readers and translators.
   useEffect(() => {
-    document.documentElement.lang = locale === "pt" ? "pt-BR" : "es";
+    document.documentElement.lang = LOCALE_TAGS[locale];
   }, [locale]);
 
   useEffect(() => {
     endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, isSending]);
 
-  async function submit(text: string) {
+  function appendMessage(role: ChatMessage["role"], text: string, actions: UiAction[] = []) {
+    setMessages((current) => [...current, { id: crypto.randomUUID(), role, text, actions }]);
+  }
+
+  // Runs one backend call and renders the agent's reply and UI actions.
+  async function runRequest(request: () => Promise<ChatResponse>): Promise<boolean> {
+    setIsSending(true);
+    try {
+      const response = await request();
+      appendMessage("assistant", response.reply, response.ui_actions);
+      return true;
+    } catch {
+      setNotice("sendError");
+      return false;
+    } finally {
+      setIsSending(false);
+    }
+  }
+
+  async function submitMessage(text: string) {
     const message = text.trim();
     if (!message || isSending) return;
 
@@ -49,34 +84,64 @@ export default function ChatPanel() {
 
     setNotice(null);
     setDraft("");
-    setMessages((current) => [
-      ...current,
-      { id: crypto.randomUUID(), role: "user", text: message },
-    ]);
-    setIsSending(true);
+    appendMessage("user", message);
+    await runRequest(() =>
+      cardSupportApi.sendMessage({ session_id: sessionId, message, locale }),
+    );
+  }
 
-    try {
-      const reply = await sendChatMessage(message, locale);
-      setMessages((current) => [
-        ...current,
-        { id: crypto.randomUUID(), role: "assistant", text: reply.text },
-      ]);
-    } catch {
-      setNotice("sendError");
-    } finally {
-      setIsSending(false);
+  async function answerVerification(challengeId: string, answer: string) {
+    if (isSending) return;
+    setNotice(null);
+    setResolutions((current) => ({ ...current, [challengeId]: "answered" }));
+    // The answer is not echoed into the transcript: it is a security answer.
+    const ok = await runRequest(() =>
+      cardSupportApi.answerVerification({
+        session_id: sessionId,
+        challenge_id: challengeId,
+        answer,
+        locale,
+      }),
+    );
+    if (!ok) {
+      setResolutions((current) => withoutKey(current, challengeId));
     }
+  }
+
+  async function decide(confirmationId: string, decision: "confirm" | "cancel") {
+    if (isSending) return;
+    setNotice(null);
+    setResolutions((current) => ({ ...current, [confirmationId]: decision }));
+    const ok = await runRequest(() =>
+      cardSupportApi.confirmAction({
+        session_id: sessionId,
+        confirmation_id: confirmationId,
+        decision,
+        locale,
+      }),
+    );
+    if (!ok) {
+      setResolutions((current) => withoutKey(current, confirmationId));
+    }
+  }
+
+  function resetConversation() {
+    setSessionId(crypto.randomUUID());
+    setMessages([]);
+    setResolutions({});
+    setDraft("");
+    setNotice(null);
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    void submit(draft);
+    void submitMessage(draft);
   }
 
   function handleKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
     if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) {
       event.preventDefault();
-      void submit(draft);
+      void submitMessage(draft);
     }
   }
 
@@ -91,20 +156,32 @@ export default function ChatPanel() {
           <p className={styles.subtitle}>{t.subtitle}</p>
         </div>
 
-        <div className={styles.localeSwitch} role="group" aria-label={t.languageLabel}>
-          {LOCALES.map((option) => (
+        <div className={styles.headerControls}>
+          <div className={styles.localeSwitch} role="group" aria-label={t.languageLabel}>
+            {LOCALES.map((option) => (
+              <button
+                key={option}
+                type="button"
+                className={styles.localeButton}
+                aria-pressed={option === locale}
+                onClick={() => {
+                  if (isLocale(option)) setLocale(option);
+                }}
+              >
+                {dictionaries[option].localeName}
+              </button>
+            ))}
+          </div>
+          {messages.length > 0 && (
             <button
-              key={option}
               type="button"
-              className={styles.localeButton}
-              aria-pressed={option === locale}
-              onClick={() => {
-                if (isLocale(option)) setLocale(option);
-              }}
+              className={styles.resetButton}
+              onClick={resetConversation}
+              disabled={isSending}
             >
-              {dictionaries[option].localeName}
+              {t.newConversation}
             </button>
-          ))}
+          )}
         </div>
       </header>
 
@@ -123,7 +200,7 @@ export default function ChatPanel() {
                   <button
                     type="button"
                     className={styles.suggestion}
-                    onClick={() => void submit(suggestion)}
+                    onClick={() => void submitMessage(suggestion)}
                     disabled={isSending}
                   >
                     {suggestion}
@@ -137,14 +214,41 @@ export default function ChatPanel() {
         {messages.map((message) => (
           <div
             key={message.id}
-            className={`${styles.bubble} ${
-              message.role === "user" ? styles.user : styles.assistant
+            className={`${styles.turn} ${
+              message.role === "user" ? styles.userTurn : styles.assistantTurn
             }`}
           >
-            <span className={styles.author}>
-              {message.role === "user" ? t.youLabel : t.assistantLabel}
-            </span>
-            <p>{message.text}</p>
+            <div
+              className={`${styles.bubble} ${
+                message.role === "user" ? styles.user : styles.assistant
+              }`}
+            >
+              <span className={styles.author}>
+                {message.role === "user" ? t.youLabel : t.assistantLabel}
+              </span>
+              <p>{message.text}</p>
+            </div>
+
+            {message.actions.map((action, index) => {
+              const key = actionKey(action);
+              return (
+                <div key={`${message.id}-${index}`} className={styles.actionSlot}>
+                  <ActionCard
+                    action={action}
+                    locale={locale}
+                    t={t}
+                    disabled={isSending}
+                    resolution={key ? resolutions[key] : undefined}
+                    onAnswerVerification={(challengeId, answer) =>
+                      void answerVerification(challengeId, answer)
+                    }
+                    onDecide={(confirmationId, decision) =>
+                      void decide(confirmationId, decision)
+                    }
+                  />
+                </div>
+              );
+            })}
           </div>
         ))}
 
