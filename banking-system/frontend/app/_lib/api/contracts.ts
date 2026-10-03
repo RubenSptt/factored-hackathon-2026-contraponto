@@ -103,3 +103,28 @@ export interface CardSupportApi {
   answerVerification(request: VerificationAnswerRequest): Promise<ChatResponse>;
   confirmAction(request: ConfirmActionRequest): Promise<ChatResponse>;
 }
+
+// ---- Human agent desk -------------------------------------------------------
+// Read-only endpoints for the human agent who receives escalated cases.
+// In deployment they require an agent role from the identity provider
+// (for example a Cognito group); customers can never call them.
+
+export type HandoffPriority = "urgent" | "high" | "normal";
+
+export type HandoffStatus = "open" | "in_progress" | "resolved";
+
+/** A handoff as the agent desk sees it. Priority is set by backend rules. */
+export type HandoffCase = {
+  handoff: HumanHandoff;
+  created_at: string; // ISO 8601
+  priority: HandoffPriority;
+  status: HandoffStatus;
+  customer_locale: Locale;
+};
+
+export interface AgentDeskApi {
+  /** GET /agent/handoffs — newest first. */
+  listHandoffs(): Promise<HandoffCase[]>;
+  /** GET /agent/handoffs/{case_id} — null when the case does not exist. */
+  getHandoff(caseId: string): Promise<HandoffCase | null>;
+}

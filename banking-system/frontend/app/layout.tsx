@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import AppNav from "./_components/AppNav";
+import { LocaleProvider } from "./_lib/locale-context";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -20,7 +22,12 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="es" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body>{children}</body>
+      <body>
+        <LocaleProvider>
+          <AppNav />
+          {children}
+        </LocaleProvider>
+      </body>
     </html>
   );
 }

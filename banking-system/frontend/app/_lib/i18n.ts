@@ -69,6 +69,49 @@ export type Dictionary = {
     nextStep: string;
     actions: Record<string, string>;
   };
+  nav: {
+    brand: string;
+    customer: string;
+    agent: string;
+  };
+  agentDesk: {
+    title: string;
+    subtitle: string;
+    demoNote: string;
+    loading: string;
+    empty: string;
+    loadError: string;
+    columns: {
+      caseId: string;
+      priority: string;
+      reason: string;
+      identity: string;
+      card: string;
+      opened: string;
+      status: string;
+    };
+    priority: Record<"urgent" | "high" | "normal", string>;
+    status: Record<"open" | "in_progress" | "resolved", string>;
+    intents: Record<string, string>;
+    verified: string;
+    notVerified: string;
+    blocked: string;
+    notBlocked: string;
+    noCard: string;
+    minutesAgo: (minutes: number) => string;
+    hoursAgo: (hours: number) => string;
+    back: string;
+    notFound: (caseId: string) => string;
+    facts: string;
+    customerLanguage: string;
+    riskReason: string;
+    actionsTaken: string;
+    flaggedTransactions: string;
+    noFlaggedTransactions: string;
+    openQuestions: string;
+    noTranscript: string;
+    rawJson: string;
+  };
 };
 
 export const dictionaries: Record<Locale, Dictionary> = {
@@ -149,6 +192,56 @@ export const dictionaries: Record<Locale, Dictionary> = {
         block_declined_by_customer: "Bloqueo rechazado por el cliente",
       },
     },
+    nav: {
+      brand: "Card Emergency Support",
+      customer: "Cliente",
+      agent: "Agente humano",
+    },
+    agentDesk: {
+      title: "Casos escalados",
+      subtitle:
+        "Traspasos del asistente a agentes humanos: hechos verificados y preguntas abiertas, sin transcripciones.",
+      demoNote:
+        "Casos de ejemplo ficticios más los que crees en el chat durante la demo (guardados solo en este navegador).",
+      loading: "Cargando casos…",
+      empty: "No hay casos escalados.",
+      loadError: "No pudimos cargar los casos. Inténtalo de nuevo.",
+      columns: {
+        caseId: "Caso",
+        priority: "Prioridad",
+        reason: "Motivo",
+        identity: "Identidad",
+        card: "Tarjeta",
+        opened: "Abierto",
+        status: "Estado",
+      },
+      priority: { urgent: "Urgente", high: "Alta", normal: "Normal" },
+      status: { open: "Abierto", in_progress: "En curso", resolved: "Resuelto" },
+      intents: {
+        stolen_card: "Tarjeta robada",
+        lost_card: "Tarjeta perdida",
+        suspicious_transaction: "Movimiento sospechoso",
+      },
+      verified: "Verificada",
+      notVerified: "No verificada",
+      blocked: "Bloqueada",
+      notBlocked: "Sin bloquear",
+      noCard: "Sin identificar",
+      minutesAgo: (minutes) => (minutes < 1 ? "Ahora" : `Hace ${minutes} min`),
+      hoursAgo: (hours) => `Hace ${hours} h`,
+      back: "← Volver a la cola",
+      notFound: (caseId) => `No encontramos el caso ${caseId}.`,
+      facts: "Hechos verificados",
+      customerLanguage: "Idioma del cliente",
+      riskReason: "Motivo del riesgo",
+      actionsTaken: "Acciones realizadas",
+      flaggedTransactions: "Movimientos señalados",
+      noFlaggedTransactions: "El cliente todavía no señaló movimientos concretos.",
+      openQuestions: "Preguntas abiertas",
+      noTranscript:
+        "El caso no incluye la transcripción de la conversación: el agente trabaja con hechos verificados.",
+      rawJson: "Ver el traspaso en JSON",
+    },
   },
   pt: {
     localeName: "Português",
@@ -226,6 +319,56 @@ export const dictionaries: Record<Locale, Dictionary> = {
         card_status_verified: "Bloqueio confirmado no sistema",
         block_declined_by_customer: "Bloqueio recusado pelo cliente",
       },
+    },
+    nav: {
+      brand: "Card Emergency Support",
+      customer: "Cliente",
+      agent: "Atendente humano",
+    },
+    agentDesk: {
+      title: "Casos escalados",
+      subtitle:
+        "Encaminhamentos do assistente para atendentes humanos: fatos verificados e perguntas em aberto, sem transcrições.",
+      demoNote:
+        "Casos de exemplo fictícios mais os que você criar no chat durante a demo (salvos apenas neste navegador).",
+      loading: "Carregando casos…",
+      empty: "Não há casos escalados.",
+      loadError: "Não conseguimos carregar os casos. Tente novamente.",
+      columns: {
+        caseId: "Caso",
+        priority: "Prioridade",
+        reason: "Motivo",
+        identity: "Identidade",
+        card: "Cartão",
+        opened: "Aberto",
+        status: "Status",
+      },
+      priority: { urgent: "Urgente", high: "Alta", normal: "Normal" },
+      status: { open: "Aberto", in_progress: "Em andamento", resolved: "Resolvido" },
+      intents: {
+        stolen_card: "Cartão roubado",
+        lost_card: "Cartão perdido",
+        suspicious_transaction: "Movimentação suspeita",
+      },
+      verified: "Verificada",
+      notVerified: "Não verificada",
+      blocked: "Bloqueado",
+      notBlocked: "Sem bloqueio",
+      noCard: "Não identificado",
+      minutesAgo: (minutes) => (minutes < 1 ? "Agora" : `Há ${minutes} min`),
+      hoursAgo: (hours) => `Há ${hours} h`,
+      back: "← Voltar para a fila",
+      notFound: (caseId) => `Não encontramos o caso ${caseId}.`,
+      facts: "Fatos verificados",
+      customerLanguage: "Idioma do cliente",
+      riskReason: "Motivo do risco",
+      actionsTaken: "Ações realizadas",
+      flaggedTransactions: "Movimentações sinalizadas",
+      noFlaggedTransactions: "O cliente ainda não sinalizou movimentações específicas.",
+      openQuestions: "Perguntas em aberto",
+      noTranscript:
+        "O caso não inclui a transcrição da conversa: o atendente trabalha com fatos verificados.",
+      rawJson: "Ver o encaminhamento em JSON",
     },
   },
 };
