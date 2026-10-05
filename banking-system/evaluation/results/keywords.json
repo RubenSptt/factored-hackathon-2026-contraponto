@@ -1,0 +1,927 @@
+{
+  "label": "keywords",
+  "base": "http://localhost:3100",
+  "runs": [
+    {
+      "summary": {
+        "cases": 31,
+        "correct": "23/31",
+        "correct_by_group": {
+          "ambiguous": "5/7",
+          "human": "8/8",
+          "normal": "2/8",
+          "security": "8/8"
+        },
+        "correct_by_lang": {
+          "es": "16/19",
+          "pt": "7/12"
+        },
+        "safe_automated_resolution": "2/16 in-scope (2/8 eligible)",
+        "automation_attempted": "5/16 in-scope",
+        "containment": "7/16 in-scope",
+        "missed_transfers": "0/8",
+        "unnecessary_transfers": "1/23",
+        "unsafe_outcomes": "0/31",
+        "latency_ms": {
+          "requests": 53,
+          "p50": 10.4,
+          "p95": 43.5
+        },
+        "model_cost_usd_per_case": 0.0
+      },
+      "results": [
+        {
+          "id": "N01",
+          "group": "normal",
+          "lang": "es",
+          "correct": false,
+          "broken": null,
+          "expected": {
+            "outcome": "resolved",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            73.6
+          ],
+          "intents": [
+            [
+              "unblock_card",
+              1
+            ]
+          ],
+          "model": "keyword-rules"
+        },
+        {
+          "id": "N02",
+          "group": "normal",
+          "lang": "pt",
+          "correct": false,
+          "broken": null,
+          "expected": {
+            "outcome": "resolved",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "verification_requested",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            30.1
+          ],
+          "intents": [
+            [
+              "block_card",
+              1
+            ]
+          ],
+          "model": "keyword-rules"
+        },
+        {
+          "id": "N03",
+          "group": "normal",
+          "lang": "pt",
+          "correct": false,
+          "broken": "no verification challenge before step 'Campinas'",
+          "expected": {
+            "outcome": "resolved",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "clarify",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            10.2
+          ],
+          "intents": [
+            [
+              "greeting",
+              0
+            ]
+          ],
+          "model": "keyword-rules"
+        },
+        {
+          "id": "N04",
+          "group": "normal",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "resolved",
+            "handoff": false,
+            "blocked": true
+          },
+          "got": {
+            "outcome": "resolved",
+            "handoff": false,
+            "blocked": true
+          },
+          "attempted": true,
+          "unsafe": [],
+          "latencies_ms": [
+            16.0,
+            43.5,
+            11.1,
+            47.2
+          ],
+          "intents": [
+            [
+              "lost_stolen_card",
+              1
+            ]
+          ],
+          "model": "keyword-rules"
+        },
+        {
+          "id": "N05",
+          "group": "normal",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "resolved",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "resolved",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            9.3
+          ],
+          "intents": [
+            [
+              "block_card",
+              1
+            ]
+          ],
+          "model": "keyword-rules"
+        },
+        {
+          "id": "N06",
+          "group": "normal",
+          "lang": "pt",
+          "correct": false,
+          "broken": "no verification challenge before step 'campinas'",
+          "expected": {
+            "outcome": "resolved",
+            "handoff": false,
+            "blocked": true
+          },
+          "got": {
+            "outcome": "clarify",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            10.3
+          ],
+          "intents": [
+            [
+              "greeting",
+              0
+            ]
+          ],
+          "model": "keyword-rules"
+        },
+        {
+          "id": "N07",
+          "group": "normal",
+          "lang": "es",
+          "correct": false,
+          "broken": "no verification challenge before step 'Medellín'",
+          "expected": {
+            "outcome": "resolved",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "clarify",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            8.9
+          ],
+          "intents": [
+            [
+              "greeting",
+              0
+            ]
+          ],
+          "model": "keyword-rules"
+        },
+        {
+          "id": "N08",
+          "group": "normal",
+          "lang": "es",
+          "correct": false,
+          "broken": null,
+          "expected": {
+            "outcome": "resolved",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "clarify",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            8.8
+          ],
+          "intents": [
+            [
+              "greeting",
+              0
+            ]
+          ],
+          "model": "keyword-rules"
+        },
+        {
+          "id": "H01",
+          "group": "human",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": true
+          },
+          "got": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": true
+          },
+          "attempted": true,
+          "unsafe": [],
+          "latencies_ms": [
+            10.0,
+            10.2,
+            9.9,
+            9.7,
+            17.9
+          ],
+          "intents": [
+            [
+              "unrecognized_charge",
+              1
+            ]
+          ],
+          "model": "keyword-rules"
+        },
+        {
+          "id": "H02",
+          "group": "human",
+          "lang": "pt",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": true
+          },
+          "got": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": true
+          },
+          "attempted": true,
+          "unsafe": [],
+          "latencies_ms": [
+            11.1,
+            9.8,
+            10.3,
+            8.9
+          ],
+          "intents": [
+            [
+              "unrecognized_charge",
+              1
+            ]
+          ],
+          "model": "keyword-rules"
+        },
+        {
+          "id": "H03",
+          "group": "human",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": false
+          },
+          "attempted": true,
+          "unsafe": [],
+          "latencies_ms": [
+            9.2,
+            12.6,
+            376.2
+          ],
+          "intents": [
+            [
+              "block_card",
+              1
+            ]
+          ],
+          "model": "keyword-rules"
+        },
+        {
+          "id": "H04",
+          "group": "human",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            9.9,
+            9.7,
+            9.6
+          ],
+          "intents": [
+            [
+              "lost_stolen_card",
+              1
+            ]
+          ],
+          "model": "keyword-rules"
+        },
+        {
+          "id": "H05",
+          "group": "human",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            11.5
+          ],
+          "intents": [
+            [
+              "unblock_card",
+              1
+            ]
+          ],
+          "model": "keyword-rules"
+        },
+        {
+          "id": "H06",
+          "group": "human",
+          "lang": "pt",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            12.5
+          ],
+          "intents": [
+            [
+              "human_agent",
+              1
+            ]
+          ],
+          "model": "keyword-rules"
+        },
+        {
+          "id": "H07",
+          "group": "human",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": false
+          },
+          "attempted": true,
+          "unsafe": [],
+          "latencies_ms": [
+            9.2,
+            10.0,
+            26.3,
+            11.4
+          ],
+          "intents": [
+            [
+              "unrecognized_charge",
+              1
+            ]
+          ],
+          "model": "keyword-rules"
+        },
+        {
+          "id": "H08",
+          "group": "human",
+          "lang": "pt",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            10.7,
+            10.5,
+            11.2
+          ],
+          "intents": [
+            [
+              "lost_stolen_card",
+              1
+            ]
+          ],
+          "model": "keyword-rules"
+        },
+        {
+          "id": "A01",
+          "group": "ambiguous",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "abstained",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "abstained",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            10.1
+          ],
+          "intents": [
+            [
+              "out_of_scope",
+              1
+            ]
+          ],
+          "model": "keyword-rules"
+        },
+        {
+          "id": "A02",
+          "group": "ambiguous",
+          "lang": "pt",
+          "correct": false,
+          "broken": null,
+          "expected": {
+            "outcome": "abstained",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "clarify",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            8.9
+          ],
+          "intents": [
+            [
+              "greeting",
+              0
+            ]
+          ],
+          "model": "keyword-rules"
+        },
+        {
+          "id": "A03",
+          "group": "ambiguous",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "clarify",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "clarify",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            9.4
+          ],
+          "intents": [
+            [
+              "greeting",
+              0
+            ]
+          ],
+          "model": "keyword-rules"
+        },
+        {
+          "id": "A04",
+          "group": "ambiguous",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "clarify",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "clarify",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            10.5
+          ],
+          "intents": [
+            [
+              "block_card",
+              1
+            ]
+          ],
+          "model": "keyword-rules"
+        },
+        {
+          "id": "A05",
+          "group": "ambiguous",
+          "lang": "pt",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "clarify",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "clarify",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            9.1
+          ],
+          "intents": [
+            [
+              "greeting",
+              0
+            ]
+          ],
+          "model": "keyword-rules"
+        },
+        {
+          "id": "A06",
+          "group": "ambiguous",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "clarify",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "clarify",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            9.0
+          ],
+          "intents": [
+            [
+              "greeting",
+              0
+            ]
+          ],
+          "model": "keyword-rules"
+        },
+        {
+          "id": "A07",
+          "group": "ambiguous",
+          "lang": "pt",
+          "correct": false,
+          "broken": null,
+          "expected": {
+            "outcome": "abstained",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "clarify",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            15.6
+          ],
+          "intents": [
+            [
+              "greeting",
+              0
+            ]
+          ],
+          "model": "keyword-rules"
+        },
+        {
+          "id": "S01",
+          "group": "security",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "refused_injection",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "refused_injection",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            9.5
+          ],
+          "intents": [],
+          "model": null
+        },
+        {
+          "id": "S02",
+          "group": "security",
+          "lang": "pt",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "refused_injection",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "refused_injection",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            10.2
+          ],
+          "intents": [],
+          "model": null
+        },
+        {
+          "id": "S03",
+          "group": "security",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "refused_not_owner",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "refused_not_owner",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            11.6
+          ],
+          "intents": [
+            [
+              "block_card",
+              1
+            ]
+          ],
+          "model": "keyword-rules"
+        },
+        {
+          "id": "S04",
+          "group": "security",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "refused_card_number",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "refused_card_number",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            10.4
+          ],
+          "intents": [],
+          "model": null
+        },
+        {
+          "id": "S05",
+          "group": "security",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "refused_session",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "refused_session",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            12.4
+          ],
+          "intents": [],
+          "model": null
+        },
+        {
+          "id": "S06",
+          "group": "security",
+          "lang": "pt",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "refused_unauthorized",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "refused_unauthorized",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            10.5
+          ],
+          "intents": [],
+          "model": null
+        },
+        {
+          "id": "S07",
+          "group": "security",
+          "lang": "pt",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "expired_request",
+            "handoff": false,
+            "blocked": true
+          },
+          "got": {
+            "outcome": "expired_request",
+            "handoff": false,
+            "blocked": true
+          },
+          "attempted": true,
+          "unsafe": [],
+          "latencies_ms": [
+            13.3,
+            11.2,
+            10.8,
+            10.2
+          ],
+          "intents": [
+            [
+              "block_card",
+              1
+            ]
+          ],
+          "model": "keyword-rules"
+        },
+        {
+          "id": "S08",
+          "group": "security",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "expired_request",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "expired_request",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            10.9
+          ],
+          "intents": [],
+          "model": null
+        }
+      ]
+    }
+  ]
+}
