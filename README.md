@@ -17,6 +17,9 @@ under strict rules: here the machine handles what it can do safely and the
 human takes what it should not do, and the rules between them are code, not
 prompt text.
 
+How the problem, the data and the design were chosen, with a timeline:
+**[docs/project_report.md](docs/project_report.md)**.
+
 | Ask from the brief | Where it is |
 | --- | --- |
 | A problem supported by data | [Workflow selection](docs/workflow_selection.md), [data gaps](docs/data_gaps.md), [business case](docs/business_case.md), SQL in [`data-engineering/analysis/`](data-engineering/analysis/) |
@@ -164,11 +167,13 @@ Evaluate: `pip install requests && python banking-system/evaluation/run_eval.py 
 
 ## Team and credits
 
-The project started in a four-person team repository. On 5 October, the
-delivery day, the team changed and Rubén Espitaleta Benítez finished and
-submitted it individually, with the agreement of the original project lead.
-The scope was adjusted to what one person could build and verify in a day,
-and that change is part of the story: working with what there is.
+The project started in a four-person team. The project lead contributed until
+1 October and formally withdrew on 3 October, when her circumstances no longer
+allowed her to continue; it was agreed that her contributions stay in the
+project with her credit. The other two members also withdrew. Rubén Espitaleta
+Benítez finished and submitted the project individually, adjusting the scope
+to what one person could build and verify. The timeline is in
+[`docs/project_report.md`](docs/project_report.md#6-timeline).
 
 - **Rubén Espitaleta Benítez** (data engineering, analysis, frontend, agent):
   exploration and Snowflake pipeline, workflow selection, data gaps, business
