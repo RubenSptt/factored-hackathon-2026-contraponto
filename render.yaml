@@ -14,3 +14,7 @@ services:
         value: "22"
       - key: SESSION_SECRET
         generateValue: true
+      # PostgreSQL operational store (Neon). Set in the dashboard, never here.
+      # Without it the agent serves the verified snapshot.
+      - key: DATABASE_URL
+        sync: false

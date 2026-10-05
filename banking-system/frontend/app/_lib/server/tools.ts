@@ -3,9 +3,9 @@
 // conversation layer can ask for an action; it cannot authorize one.
 
 import type { TransactionSummary } from "../api/contracts";
-import { cards, FRAUD_SCORE_CUTOFF, transactions } from "./data";
+import { FRAUD_SCORE_CUTOFF } from "./data";
 import type { Card, CardStatus } from "./data";
-import { store } from "./store";
+import { DataUnavailableError, withRepository } from "./repository";
 import type { ToolCall } from "./store";
 
 export class ToolError extends Error {
@@ -32,7 +32,9 @@ async function run<T>(trace: Trace, tool: string, fn: () => T | Promise<T>, retr
       const result = await fn();
       trace.tools.push({ tool, ok: true, attempts, ms: Date.now() - started });
       return result;
-    } catch (error) {
+    } catch (caught) {
+      let error = caught;
+      if (error instanceof DataUnavailableError) error = new ToolError("unavailable", "data source unavailable");
       const transient = error instanceof ToolError && error.code === "unavailable";
       if (retry && transient && attempts < MAX_ATTEMPTS) {
         await new Promise((resolve) => setTimeout(resolve, BACKOFF_MS * 2 ** (attempts - 1)));
@@ -48,37 +50,30 @@ async function run<T>(trace: Trace, tool: string, fn: () => T | Promise<T>, retr
 export type CardView = { card_id: string; type: Card["type"]; last_four: string; status: CardStatus; expiration: string | null };
 
 function view(card: Card): CardView {
-  return {
-    card_id: card.card_id,
-    type: card.type,
-    last_four: card.last_four,
-    status: store().cardStatus.get(card.card_id) ?? card.status,
-    expiration: card.expiration,
-  };
+  return { card_id: card.card_id, type: card.type, last_four: card.last_four, status: card.status, expiration: card.expiration };
 }
 
-function ownedCard(customerId: string, cardId: string): Card {
-  const card = cards().find((c) => c.card_id === cardId);
-  if (!card || card.customer_id !== customerId) {
-    throw new ToolError("not_owner", "card does not belong to the session's customer");
-  }
+/** Ownership is checked in the query itself: a card of another customer is never read. */
+async function ownedCard(customerId: string, cardId: string): Promise<Card> {
+  const card = await withRepository((r) => r.getCard(customerId, cardId));
+  if (!card) throw new ToolError("not_owner", "card does not belong to the session's customer");
   return card;
 }
 
 export function listCards(trace: Trace, customerId: string): Promise<CardView[]> {
-  return run(trace, "list_cards", () => cards().filter((c) => c.customer_id === customerId).map(view));
+  return run(trace, "list_cards", async () => (await withRepository((r) => r.listCards(customerId))).map(view));
 }
 
 /** Resolves "4821" to a card only among the customer's own cards. */
 export function findOwnCardByLastFour(trace: Trace, customerId: string, lastFour: string): Promise<CardView | null> {
-  return run(trace, "find_card", () => {
-    const card = cards().find((c) => c.last_four === lastFour && c.customer_id === customerId);
+  return run(trace, "find_card", async () => {
+    const card = await withRepository((r) => r.findCardByLastFour(customerId, lastFour));
     return card ? view(card) : null;
   });
 }
 
 export function getCardStatus(trace: Trace, customerId: string, cardId: string): Promise<CardView> {
-  return run(trace, "get_card_status", () => view(ownedCard(customerId, cardId)));
+  return run(trace, "get_card_status", async () => view(await ownedCard(customerId, cardId)));
 }
 
 export type ReviewedTransaction = TransactionSummary & { suspicious: boolean; fraud_score: number | null };
@@ -89,14 +84,11 @@ export function getRecentTransactions(
   cardId: string,
   verified: boolean,
 ): Promise<ReviewedTransaction[]> {
-  return run(trace, "get_recent_transactions", () => {
+  return run(trace, "get_recent_transactions", async () => {
     if (!verified) throw new ToolError("not_verified", "step-up verification required");
-    ownedCard(customerId, cardId);
-    return transactions()
-      .filter((t) => t.card_id === cardId)
-      .sort((a, b) => b.date.localeCompare(a.date))
-      .slice(0, RECENT_LIMIT)
-      .map((t) => ({
+    await ownedCard(customerId, cardId);
+    const recent = await withRepository((r) => r.recentTransactions(customerId, cardId, RECENT_LIMIT));
+    return recent.map((t) => ({
         transaction_id: t.transaction_id,
         date: t.date,
         merchant: t.merchant ?? "—",
@@ -114,16 +106,17 @@ export async function blockCard(
   customerId: string,
   cardId: string,
   preconditions: { verified: boolean; confirmed: boolean },
+  traceId?: string,
 ): Promise<void> {
   await run(
     trace,
     "block_card",
-    () => {
+    async () => {
       if (!preconditions.verified) throw new ToolError("not_verified", "step-up verification required");
       if (!preconditions.confirmed) throw new ToolError("not_confirmed", "explicit confirmation required");
-      const card = ownedCard(customerId, cardId);
+      const card = await ownedCard(customerId, cardId);
       if (card.simulate_block_failure) throw new ToolError("unavailable", "card processor timeout (test hook)");
-      store().cardStatus.set(cardId, "blocked");
+      await withRepository((r) => r.setCardStatus(cardId, "blocked", { reason: "customer_confirmed_block", actor: "agent", traceId }));
     },
     true,
   );

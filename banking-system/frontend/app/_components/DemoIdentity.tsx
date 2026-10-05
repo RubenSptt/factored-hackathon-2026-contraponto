@@ -44,8 +44,8 @@ export default function DemoIdentity() {
       </select>
       <span className={styles.note}>
         {locale === "es"
-          ? "Dataset sintético del reto (muestra) y casos de prueba"
-          : "Dataset sintético do desafio (amostra) e casos de teste"}
+          ? "Dataset sintético del reto y casos de prueba"
+          : "Dataset sintético do desafio e casos de teste"}
       </span>
     </label>
   );
