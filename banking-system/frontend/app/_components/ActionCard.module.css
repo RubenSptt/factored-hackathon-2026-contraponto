@@ -1,0 +1,221 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 18px;
+  border: 1px solid #e2e8f0;
+  border-left-width: 4px;
+  border-radius: 16px;
+  color: #0f172a;
+  background: #ffffff;
+}
+
+.info {
+  border-left-color: #0284c7;
+}
+
+.warning {
+  border-left-color: #d97706;
+  background: #fffbeb;
+}
+
+.success {
+  border-left-color: #059669;
+  background: #ecfdf5;
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.subtitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.body {
+  font-size: 14px;
+  line-height: 1.55;
+  color: #334155;
+}
+
+.note {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #64748b;
+}
+
+.status {
+  width: fit-content;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  background: #f1f5f9;
+}
+
+/* Forms and buttons */
+
+.inlineForm,
+.buttonRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.input {
+  flex: 1;
+  min-width: 180px;
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  color: #0f172a;
+  font: inherit;
+  font-size: 14px;
+  background: #f8fafc;
+}
+
+.input:focus {
+  border-color: #38bdf8;
+  outline: 3px solid rgb(56 189 248 / 30%);
+}
+
+.primary,
+.danger,
+.secondary {
+  height: 42px;
+  padding: 0 16px;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primary {
+  border: 0;
+  color: #ffffff;
+  background: #1d4ed8;
+}
+
+.danger {
+  border: 0;
+  color: #ffffff;
+  background: #b91c1c;
+}
+
+.secondary {
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+  background: #ffffff;
+}
+
+.primary:hover:not(:disabled) {
+  background: #1e40af;
+}
+
+.danger:hover:not(:disabled) {
+  background: #991b1b;
+}
+
+.secondary:hover:not(:disabled) {
+  background: #f1f5f9;
+}
+
+.primary:disabled,
+.danger:disabled,
+.secondary:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.primary:focus-visible,
+.danger:focus-visible,
+.secondary:focus-visible {
+  outline: 3px solid #38bdf8;
+  outline-offset: 2px;
+}
+
+/* Transactions table */
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.table th {
+  padding: 6px 8px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 8px;
+  border-bottom: 1px solid #f1f5f9;
+  white-space: nowrap;
+}
+
+.table tr:last-child td {
+  border-bottom: 0;
+}
+
+.numeric {
+  text-align: right !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.muted {
+  color: #94a3b8;
+  font-style: italic;
+}
+
+/* Handoff facts */
+
+.facts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 16px;
+  font-size: 14px;
+}
+
+.facts dt {
+  color: #64748b;
+}
+
+.facts dd {
+  font-weight: 600;
+}
+
+.caseId {
+  font-family: var(--font-geist-mono), monospace;
+}
+
+.list {
+  padding-left: 18px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #334155;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
