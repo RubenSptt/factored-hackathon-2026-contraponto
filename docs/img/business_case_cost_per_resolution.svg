@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" font-family="Inter, Segoe UI, Arial, sans-serif">
+<rect width="760" height="300" fill="#fcfcfb"/>
+<text x="24" y="32" font-size="18" font-weight="600" fill="#0b0b0b">Cost per resolved card contact (USD)</text>
+<text x="24" y="54" font-size="13" fill="#52514e">Dot = base scenario · line = conservative to optimistic · synthetic dataset, assumptions in docs/business_case.md</text>
+<line x1="150.0" y1="70" x2="150.0" y2="250" stroke="#e4e3df" stroke-width="1"/>
+<text x="150.0" y="270" font-size="12" fill="#52514e" text-anchor="middle">$0</text>
+<line x1="312.8571428571429" y1="70" x2="312.8571428571429" y2="250" stroke="#e4e3df" stroke-width="1"/>
+<text x="312.8571428571429" y="270" font-size="12" fill="#52514e" text-anchor="middle">$1</text>
+<line x1="475.7142857142857" y1="70" x2="475.7142857142857" y2="250" stroke="#e4e3df" stroke-width="1"/>
+<text x="475.7142857142857" y="270" font-size="12" fill="#52514e" text-anchor="middle">$2</text>
+<line x1="638.5714285714286" y1="70" x2="638.5714285714286" y2="250" stroke="#e4e3df" stroke-width="1"/>
+<text x="638.5714285714286" y="270" font-size="12" fill="#52514e" text-anchor="middle">$3</text>
+<text x="24" y="125" font-size="14" fill="#0b0b0b">Human agent</text>
+<line x1="430.60581252558336" y1="120" x2="589.2100548827856" y2="120" stroke="#eb6834" stroke-width="2" stroke-linecap="round"/>
+<line x1="430.60581252558336" y1="113" x2="430.60581252558336" y2="127" stroke="#eb6834" stroke-width="2"/>
+<line x1="589.2100548827856" y1="113" x2="589.2100548827856" y2="127" stroke="#eb6834" stroke-width="2"/>
+<circle cx="485.2828598414777" cy="120" r="7" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<text x="485.2828598414777" y="104" font-size="13" font-weight="600" fill="#0b0b0b" text-anchor="middle">$2.06</text>
+<text x="430.60581252558336" y="144" font-size="11" fill="#52514e" text-anchor="middle">$1.72</text>
+<text x="589.2100548827856" y="144" font-size="11" fill="#52514e" text-anchor="middle">$2.70</text>
+<text x="24" y="205" font-size="14" fill="#0b0b0b">AI agent</text>
+<line x1="166.766767534159" y1="200" x2="641.6786916786916" y2="200" stroke="#2a78d6" stroke-width="2" stroke-linecap="round"/>
+<line x1="166.766767534159" y1="193" x2="166.766767534159" y2="207" stroke="#2a78d6" stroke-width="2"/>
+<line x1="641.6786916786916" y1="193" x2="641.6786916786916" y2="207" stroke="#2a78d6" stroke-width="2"/>
+<circle cx="275.10056200154156" cy="200" r="7" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<text x="275.10056200154156" y="184" font-size="13" font-weight="600" fill="#0b0b0b" text-anchor="middle">$0.77</text>
+<text x="166.766767534159" y="224" font-size="11" fill="#52514e" text-anchor="middle">$0.10</text>
+<text x="641.6786916786916" y="224" font-size="11" fill="#52514e" text-anchor="middle">$3.02</text>
+</svg>
