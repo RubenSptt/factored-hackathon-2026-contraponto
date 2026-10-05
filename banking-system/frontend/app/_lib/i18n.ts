@@ -78,6 +78,17 @@ export type Dictionary = {
     title: string;
     subtitle: string;
     demoNote: string;
+    dataSource: {
+      label: string;
+      postgres: string;
+      snapshot: string;
+      exported: string;
+      sample: string;
+      loaded: string;
+      customers: string;
+      cards: string;
+      transactions: string;
+    };
     loading: string;
     empty: string;
     loadError: string;
@@ -205,7 +216,18 @@ export const dictionaries: Record<Locale, Dictionary> = {
       subtitle:
         "Traspasos del asistente a agentes humanos: hechos verificados y preguntas abiertas, sin transcripciones.",
       demoNote:
-        "Casos de ejemplo ficticios más los que crees en el chat durante la demo (guardados solo en este navegador).",
+        "Casos creados en el chat durante la demo. Viven en la memoria del servidor y se borran al reiniciarlo.",
+      dataSource: {
+        label: "Datos",
+        postgres: "PostgreSQL (Neon)",
+        snapshot: "Snapshot verificado (respaldo)",
+        exported: "export completo de Snowflake del",
+        sample: "muestra del export de Snowflake del",
+        loaded: "carga n.º",
+        customers: "clientes",
+        cards: "tarjetas",
+        transactions: "transacciones",
+      },
       loading: "Cargando casos…",
       empty: "No hay casos escalados.",
       loadError: "No pudimos cargar los casos. Inténtalo de nuevo.",
@@ -341,7 +363,18 @@ export const dictionaries: Record<Locale, Dictionary> = {
       subtitle:
         "Encaminhamentos do assistente para atendentes humanos: fatos verificados e perguntas em aberto, sem transcrições.",
       demoNote:
-        "Casos de exemplo fictícios mais os que você criar no chat durante a demo (salvos apenas neste navegador).",
+        "Casos criados no chat durante a demo. Ficam na memória do servidor e são apagados ao reiniciá-lo.",
+      dataSource: {
+        label: "Dados",
+        postgres: "PostgreSQL (Neon)",
+        snapshot: "Snapshot verificado (contingência)",
+        exported: "exportação completa do Snowflake de",
+        sample: "amostra da exportação do Snowflake de",
+        loaded: "carga n.º",
+        customers: "clientes",
+        cards: "cartões",
+        transactions: "transações",
+      },
       loading: "Carregando casos…",
       empty: "Não há casos escalados.",
       loadError: "Não conseguimos carregar os casos. Tente novamente.",

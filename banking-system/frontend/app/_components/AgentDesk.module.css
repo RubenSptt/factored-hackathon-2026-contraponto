@@ -247,3 +247,33 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Data source strip (from /api/health) */
+
+.source {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  max-width: 100%;
+  padding: 8px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  color: #334155;
+  background: #f8fafc;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.sourceLive,
+.sourceFallback {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #15803d;
+}
+
+.sourceFallback {
+  background: #b45309;
+}
