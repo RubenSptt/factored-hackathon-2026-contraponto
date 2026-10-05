@@ -69,10 +69,12 @@ verified block) and hands the dispute to a human with the right card and
 transaction, which happens in 0% of today's cases. It does not promise to cut
 the 15.4 days.
 
-Cost per resolution ([`business_case.md`](business_case.md)): USD 0.77 for an
-agent vs. USD 2.06 for a human in the base scenario, as a projection with every
-assumption stated. With all assumptions against it the agent loses money;
-three design levers fix that.
+Cost per resolution ([`business_case.md`](business_case.md)), a projection
+with every assumption stated: USD 0.03 for the agent as built vs. USD 2.06 for
+a human in the base scenario, because no model runs per conversation. With a
+language model, as in the original AWS design, it would be USD 0.77, and with
+all assumptions against it that design loses money unless three design levers
+are applied.
 
 ## 4. Reproducible evidence
 
