@@ -1,0 +1,348 @@
+{
+  "dataset": {
+    "rows": 338,
+    "train": 236,
+    "test": 102,
+    "moved_near_duplicates": 0,
+    "test_by_lang": {
+      "pt": 50,
+      "es": 52
+    },
+    "classes": [
+      "block_card",
+      "card_status",
+      "greeting",
+      "human_agent",
+      "lost_stolen_card",
+      "out_of_scope",
+      "recent_transactions",
+      "unblock_card",
+      "unrecognized_charge"
+    ]
+  },
+  "model": {
+    "vectorizer": "char_wb 2-4, sublinear tf, min_df=2",
+    "C_cv_macro_f1": {
+      "1": 0.7968058484725152,
+      "3": 0.835395468728802,
+      "10": 0.8454766221432889,
+      "30": 0.8455492655492656
+    },
+    "C": 30,
+    "features": 1560
+  },
+  "baseline_keywords": {
+    "all": {
+      "n": 102,
+      "accuracy": 0.5490196078431373,
+      "macro_f1": 0.5910527945313184
+    },
+    "es": {
+      "n": 52,
+      "accuracy": 0.5769230769230769,
+      "macro_f1": 0.618311467162042
+    },
+    "pt": {
+      "n": 50,
+      "accuracy": 0.52,
+      "macro_f1": 0.5591254637231649
+    }
+  },
+  "tfidf_logreg": {
+    "all": {
+      "n": 102,
+      "accuracy": 0.7745098039215687,
+      "macro_f1": 0.773311622018641
+    },
+    "es": {
+      "n": 52,
+      "accuracy": 0.75,
+      "macro_f1": 0.7444592444592445
+    },
+    "pt": {
+      "n": 50,
+      "accuracy": 0.8,
+      "macro_f1": 0.7988301821635155
+    }
+  },
+  "abstention": {
+    "threshold": 0.4,
+    "coverage": 0.8725490196078431,
+    "accuracy_when_answering": 0.8651685393258427
+  },
+  "errors": [
+    {
+      "text": "reactivar mi plástico",
+      "lang": "es",
+      "true": "unblock_card",
+      "pred": "card_status",
+      "conf": 0.37
+    },
+    {
+      "text": "tem alguém aí?",
+      "lang": "pt",
+      "true": "greeting",
+      "pred": "human_agent",
+      "conf": 0.53
+    },
+    {
+      "text": "subir el cupo de mi tarjeta",
+      "lang": "es",
+      "true": "out_of_scope",
+      "pred": "lost_stolen_card",
+      "conf": 0.24
+    },
+    {
+      "text": "quero saber se meu cartão funciona",
+      "lang": "pt",
+      "true": "card_status",
+      "pred": "out_of_scope",
+      "conf": 0.27
+    },
+    {
+      "text": "quiero volver a usar mi tarjeta bloqueada",
+      "lang": "es",
+      "true": "unblock_card",
+      "pred": "block_card",
+      "conf": 0.42
+    },
+    {
+      "text": "meu cartão tem algum bloqueio",
+      "lang": "pt",
+      "true": "card_status",
+      "pred": "block_card",
+      "conf": 0.7
+    },
+    {
+      "text": "necesito bloquear el plástico urgente",
+      "lang": "es",
+      "true": "block_card",
+      "pred": "card_status",
+      "conf": 0.23
+    },
+    {
+      "text": "deshabilita mi tarjeta",
+      "lang": "es",
+      "true": "block_card",
+      "pred": "unblock_card",
+      "conf": 0.66
+    },
+    {
+      "text": "mi tarjeta desapareció",
+      "lang": "es",
+      "true": "lost_stolen_card",
+      "pred": "block_card",
+      "conf": 0.39
+    },
+    {
+      "text": "quero voltar a usar meu cartão bloqueado",
+      "lang": "pt",
+      "true": "unblock_card",
+      "pred": "card_status",
+      "conf": 0.53
+    },
+    {
+      "text": "hola quiero consultar algo",
+      "lang": "es",
+      "true": "greeting",
+      "pred": "human_agent",
+      "conf": 0.32
+    },
+    {
+      "text": "quiero que nadie pueda usar mi tarjeta",
+      "lang": "es",
+      "true": "block_card",
+      "pred": "card_status",
+      "conf": 0.25
+    },
+    {
+      "text": "oi quero consultar uma coisa",
+      "lang": "pt",
+      "true": "greeting",
+      "pred": "human_agent",
+      "conf": 0.25
+    },
+    {
+      "text": "fazer um pix",
+      "lang": "pt",
+      "true": "out_of_scope",
+      "pred": "human_agent",
+      "conf": 0.61
+    },
+    {
+      "text": "aprobar mi crédito",
+      "lang": "es",
+      "true": "out_of_scope",
+      "pred": "lost_stolen_card",
+      "conf": 0.45
+    },
+    {
+      "text": "não estou mais com meu cartão, acho que foi roubado",
+      "lang": "pt",
+      "true": "lost_stolen_card",
+      "pred": "card_status",
+      "conf": 0.57
+    },
+    {
+      "text": "qué tal",
+      "lang": "es",
+      "true": "greeting",
+      "pred": "recent_transactions",
+      "conf": 0.24
+    },
+    {
+      "text": "no me funciona la tarjeta en el cajero",
+      "lang": "es",
+      "true": "card_status",
+      "pred": "lost_stolen_card",
+      "conf": 0.45
+    },
+    {
+      "text": "acho que clonaram meu cartão",
+      "lang": "pt",
+      "true": "unrecognized_charge",
+      "pred": "lost_stolen_card",
+      "conf": 0.46
+    },
+    {
+      "text": "fizeram compras online com meu cartão",
+      "lang": "pt",
+      "true": "unrecognized_charge",
+      "pred": "lost_stolen_card",
+      "conf": 0.28
+    },
+    {
+      "text": "meu cartão continua suspenso",
+      "lang": "pt",
+      "true": "card_status",
+      "pred": "block_card",
+      "conf": 0.56
+    },
+    {
+      "text": "alguien ahí?",
+      "lang": "es",
+      "true": "greeting",
+      "pred": "human_agent",
+      "conf": 0.69
+    },
+    {
+      "text": "hay una transacción sospechosa en mi cuenta",
+      "lang": "es",
+      "true": "unrecognized_charge",
+      "pred": "out_of_scope",
+      "conf": 0.4
+    }
+  ],
+  "confusion_labels": [
+    "block_card",
+    "card_status",
+    "greeting",
+    "human_agent",
+    "lost_stolen_card",
+    "out_of_scope",
+    "recent_transactions",
+    "unblock_card",
+    "unrecognized_charge"
+  ],
+  "confusion": [
+    [
+      8,
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    [
+      2,
+      8,
+      0,
+      0,
+      1,
+      1,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      6,
+      4,
+      0,
+      0,
+      1,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      10,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      1,
+      1,
+      0,
+      0,
+      10,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      1,
+      2,
+      9,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      12,
+      0,
+      0
+    ],
+    [
+      1,
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      7,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      2,
+      1,
+      0,
+      0,
+      9
+    ]
+  ]
+}

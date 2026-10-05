@@ -1,0 +1,10 @@
+[
+  {"intent": "human_agent", "pattern": "\\b(asesor|agente|humano|persona|atendente|operador|ejecutivo)\\b"},
+  {"intent": "unblock_card", "pattern": "desbloq|reactiv|\\bactiv"},
+  {"intent": "unrecognized_charge", "pattern": "no reconozco|nao reconheco|no hice|nao fiz|fraude|golpe|clonaron"},
+  {"intent": "lost_stolen_card", "pattern": "perd|robar|robaron|roubaram|robo|extravi"},
+  {"intent": "block_card", "pattern": "bloque|congel"},
+  {"intent": "recent_transactions", "pattern": "movimient|movimentac|transacc|transac|historial|historico|extracto|extrato"},
+  {"intent": "card_status", "pattern": "estado|status|activa|ativo"},
+  {"intent": "out_of_scope", "pattern": "prestamo|emprestimo|credito|transfer|inverti|investir|seguro|hipoteca|cuenta|conta"}
+]
