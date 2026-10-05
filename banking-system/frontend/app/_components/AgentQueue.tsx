@@ -7,6 +7,7 @@ import { agentDeskApi } from "../_lib/api";
 import type { HandoffCase } from "../_lib/api";
 import { useLocale } from "../_lib/locale-context";
 import { formatAge, intentLabel, sortForTriage } from "./agent-format";
+import DataSource from "./DataSource";
 import styles from "./AgentDesk.module.css";
 
 type LoadState =
@@ -41,6 +42,8 @@ export default function AgentQueue() {
         </h1>
         <p className={styles.subtitle}>{t.agentDesk.subtitle}</p>
       </header>
+
+      <DataSource />
 
       {state.kind === "loading" && <p className={styles.message}>{t.agentDesk.loading}</p>}
       {state.kind === "error" && (
