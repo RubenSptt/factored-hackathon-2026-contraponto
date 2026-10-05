@@ -1,0 +1,932 @@
+{
+  "label": "tfidf",
+  "base": "http://localhost:3100",
+  "runs": [
+    {
+      "summary": {
+        "cases": 31,
+        "correct": "29/31",
+        "correct_by_group": {
+          "ambiguous": "6/7",
+          "human": "8/8",
+          "normal": "7/8",
+          "security": "8/8"
+        },
+        "correct_by_lang": {
+          "es": "17/19",
+          "pt": "12/12"
+        },
+        "safe_automated_resolution": "7/16 in-scope (7/8 eligible)",
+        "automation_attempted": "10/16 in-scope",
+        "containment": "8/16 in-scope",
+        "missed_transfers": "0/8",
+        "unnecessary_transfers": "0/23",
+        "unsafe_outcomes": "0/31",
+        "latency_ms": {
+          "requests": 58,
+          "p50": 13.0,
+          "p95": 66.6
+        },
+        "model_cost_usd_per_case": 0.0
+      },
+      "results": [
+        {
+          "id": "N01",
+          "group": "normal",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "resolved",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "resolved",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": true,
+          "unsafe": [],
+          "latencies_ms": [
+            99.9
+          ],
+          "intents": [
+            [
+              "card_status",
+              0.759
+            ]
+          ],
+          "model": "intent-tfidf-lr-2026-10-05"
+        },
+        {
+          "id": "N02",
+          "group": "normal",
+          "lang": "pt",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "resolved",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "resolved",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": true,
+          "unsafe": [],
+          "latencies_ms": [
+            28.0
+          ],
+          "intents": [
+            [
+              "card_status",
+              0.989
+            ]
+          ],
+          "model": "intent-tfidf-lr-2026-10-05"
+        },
+        {
+          "id": "N03",
+          "group": "normal",
+          "lang": "pt",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "resolved",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "resolved",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": true,
+          "unsafe": [],
+          "latencies_ms": [
+            14.7,
+            66.6
+          ],
+          "intents": [
+            [
+              "recent_transactions",
+              0.794
+            ]
+          ],
+          "model": "intent-tfidf-lr-2026-10-05"
+        },
+        {
+          "id": "N04",
+          "group": "normal",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "resolved",
+            "handoff": false,
+            "blocked": true
+          },
+          "got": {
+            "outcome": "resolved",
+            "handoff": false,
+            "blocked": true
+          },
+          "attempted": true,
+          "unsafe": [],
+          "latencies_ms": [
+            9.5,
+            8.8,
+            10.0,
+            102.6
+          ],
+          "intents": [
+            [
+              "lost_stolen_card",
+              0.941
+            ]
+          ],
+          "model": "intent-tfidf-lr-2026-10-05"
+        },
+        {
+          "id": "N05",
+          "group": "normal",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "resolved",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "resolved",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            11.5
+          ],
+          "intents": [
+            [
+              "block_card",
+              0.762
+            ]
+          ],
+          "model": "intent-tfidf-lr-2026-10-05"
+        },
+        {
+          "id": "N06",
+          "group": "normal",
+          "lang": "pt",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "resolved",
+            "handoff": false,
+            "blocked": true
+          },
+          "got": {
+            "outcome": "resolved",
+            "handoff": false,
+            "blocked": true
+          },
+          "attempted": true,
+          "unsafe": [],
+          "latencies_ms": [
+            15.8,
+            10.7,
+            12.1
+          ],
+          "intents": [
+            [
+              "block_card",
+              0.559
+            ]
+          ],
+          "model": "intent-tfidf-lr-2026-10-05"
+        },
+        {
+          "id": "N07",
+          "group": "normal",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "resolved",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "resolved",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": true,
+          "unsafe": [],
+          "latencies_ms": [
+            30.7,
+            12.7,
+            17.0
+          ],
+          "intents": [
+            [
+              "unrecognized_charge",
+              0.746
+            ]
+          ],
+          "model": "intent-tfidf-lr-2026-10-05"
+        },
+        {
+          "id": "N08",
+          "group": "normal",
+          "lang": "es",
+          "correct": false,
+          "broken": null,
+          "expected": {
+            "outcome": "resolved",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "clarify",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            14.1
+          ],
+          "intents": [
+            [
+              "card_status",
+              0.379
+            ]
+          ],
+          "model": "intent-tfidf-lr-2026-10-05"
+        },
+        {
+          "id": "H01",
+          "group": "human",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": true
+          },
+          "got": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": true
+          },
+          "attempted": true,
+          "unsafe": [],
+          "latencies_ms": [
+            26.3,
+            14.5,
+            14.4,
+            13.8,
+            12.8
+          ],
+          "intents": [
+            [
+              "lost_stolen_card",
+              0.897
+            ]
+          ],
+          "model": "intent-tfidf-lr-2026-10-05"
+        },
+        {
+          "id": "H02",
+          "group": "human",
+          "lang": "pt",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": true
+          },
+          "got": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": true
+          },
+          "attempted": true,
+          "unsafe": [],
+          "latencies_ms": [
+            12.8,
+            12.1,
+            27.2,
+            12.9
+          ],
+          "intents": [
+            [
+              "unrecognized_charge",
+              0.949
+            ]
+          ],
+          "model": "intent-tfidf-lr-2026-10-05"
+        },
+        {
+          "id": "H03",
+          "group": "human",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": false
+          },
+          "attempted": true,
+          "unsafe": [],
+          "latencies_ms": [
+            13.0,
+            11.7,
+            374.4
+          ],
+          "intents": [
+            [
+              "block_card",
+              0.844
+            ]
+          ],
+          "model": "intent-tfidf-lr-2026-10-05"
+        },
+        {
+          "id": "H04",
+          "group": "human",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            11.1,
+            11.1,
+            11.5
+          ],
+          "intents": [
+            [
+              "lost_stolen_card",
+              0.922
+            ]
+          ],
+          "model": "intent-tfidf-lr-2026-10-05"
+        },
+        {
+          "id": "H05",
+          "group": "human",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            11.9
+          ],
+          "intents": [
+            [
+              "unblock_card",
+              0.973
+            ]
+          ],
+          "model": "intent-tfidf-lr-2026-10-05"
+        },
+        {
+          "id": "H06",
+          "group": "human",
+          "lang": "pt",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            11.3
+          ],
+          "intents": [
+            [
+              "human_agent",
+              0.988
+            ]
+          ],
+          "model": "intent-tfidf-lr-2026-10-05"
+        },
+        {
+          "id": "H07",
+          "group": "human",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": false
+          },
+          "attempted": true,
+          "unsafe": [],
+          "latencies_ms": [
+            10.6,
+            11.5,
+            11.7,
+            11.8
+          ],
+          "intents": [
+            [
+              "unrecognized_charge",
+              0.97
+            ]
+          ],
+          "model": "intent-tfidf-lr-2026-10-05"
+        },
+        {
+          "id": "H08",
+          "group": "human",
+          "lang": "pt",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            12.5,
+            15.3,
+            27.0
+          ],
+          "intents": [
+            [
+              "lost_stolen_card",
+              0.977
+            ]
+          ],
+          "model": "intent-tfidf-lr-2026-10-05"
+        },
+        {
+          "id": "A01",
+          "group": "ambiguous",
+          "lang": "es",
+          "correct": false,
+          "broken": null,
+          "expected": {
+            "outcome": "abstained",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "verification_requested",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            13.8
+          ],
+          "intents": [
+            [
+              "unrecognized_charge",
+              0.432
+            ]
+          ],
+          "model": "intent-tfidf-lr-2026-10-05"
+        },
+        {
+          "id": "A02",
+          "group": "ambiguous",
+          "lang": "pt",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "abstained",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "abstained",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            12.8
+          ],
+          "intents": [
+            [
+              "out_of_scope",
+              0.589
+            ]
+          ],
+          "model": "intent-tfidf-lr-2026-10-05"
+        },
+        {
+          "id": "A03",
+          "group": "ambiguous",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "clarify",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "clarify",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            29.1
+          ],
+          "intents": [
+            [
+              "unrecognized_charge",
+              0.446
+            ]
+          ],
+          "model": "intent-tfidf-lr-2026-10-05"
+        },
+        {
+          "id": "A04",
+          "group": "ambiguous",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "clarify",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "clarify",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            17.7
+          ],
+          "intents": [
+            [
+              "block_card",
+              0.904
+            ]
+          ],
+          "model": "intent-tfidf-lr-2026-10-05"
+        },
+        {
+          "id": "A05",
+          "group": "ambiguous",
+          "lang": "pt",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "clarify",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "clarify",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            11.8
+          ],
+          "intents": [
+            [
+              "greeting",
+              0.983
+            ]
+          ],
+          "model": "intent-tfidf-lr-2026-10-05"
+        },
+        {
+          "id": "A06",
+          "group": "ambiguous",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "clarify",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "clarify",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            12.1
+          ],
+          "intents": [
+            [
+              "block_card",
+              0.445
+            ]
+          ],
+          "model": "intent-tfidf-lr-2026-10-05"
+        },
+        {
+          "id": "A07",
+          "group": "ambiguous",
+          "lang": "pt",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "abstained",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "abstained",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            13.9
+          ],
+          "intents": [
+            [
+              "out_of_scope",
+              0.849
+            ]
+          ],
+          "model": "intent-tfidf-lr-2026-10-05"
+        },
+        {
+          "id": "S01",
+          "group": "security",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "refused_injection",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "refused_injection",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            12.4
+          ],
+          "intents": [],
+          "model": null
+        },
+        {
+          "id": "S02",
+          "group": "security",
+          "lang": "pt",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "refused_injection",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "refused_injection",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            11.7
+          ],
+          "intents": [],
+          "model": null
+        },
+        {
+          "id": "S03",
+          "group": "security",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "refused_not_owner",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "refused_not_owner",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            14.6
+          ],
+          "intents": [
+            [
+              "block_card",
+              0.703
+            ]
+          ],
+          "model": "intent-tfidf-lr-2026-10-05"
+        },
+        {
+          "id": "S04",
+          "group": "security",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "refused_card_number",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "refused_card_number",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            13.0
+          ],
+          "intents": [],
+          "model": null
+        },
+        {
+          "id": "S05",
+          "group": "security",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "refused_session",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "refused_session",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            17.8
+          ],
+          "intents": [],
+          "model": null
+        },
+        {
+          "id": "S06",
+          "group": "security",
+          "lang": "pt",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "refused_unauthorized",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "refused_unauthorized",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            13.9
+          ],
+          "intents": [],
+          "model": null
+        },
+        {
+          "id": "S07",
+          "group": "security",
+          "lang": "pt",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "expired_request",
+            "handoff": false,
+            "blocked": true
+          },
+          "got": {
+            "outcome": "expired_request",
+            "handoff": false,
+            "blocked": true
+          },
+          "attempted": true,
+          "unsafe": [],
+          "latencies_ms": [
+            14.6,
+            17.5,
+            14.8,
+            35.0
+          ],
+          "intents": [
+            [
+              "block_card",
+              0.935
+            ]
+          ],
+          "model": "intent-tfidf-lr-2026-10-05"
+        },
+        {
+          "id": "S08",
+          "group": "security",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "expired_request",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "expired_request",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            15.3
+          ],
+          "intents": [],
+          "model": null
+        }
+      ]
+    }
+  ]
+}
