@@ -1,0 +1,16 @@
+# Render blueprint: one Node web service running the Next.js app (UI + API).
+# Free plan: the instance sleeps after 15 idle minutes and keeps state in memory.
+services:
+  - type: web
+    name: contraponto
+    runtime: node
+    plan: free
+    rootDir: banking-system/frontend
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: SESSION_SECRET
+        generateValue: true
