@@ -14,7 +14,7 @@ import type {
   UiAction,
 } from "../api/contracts";
 import type { Locale } from "../i18n";
-import { CUSTOMERS } from "./fixture";
+import { customers } from "./data";
 import { looksLikeInjection, containsFullCardNumber, mentionedCardType, mentionedLastFour, yesNo } from "./guards";
 import { classify, INTENT_THRESHOLD, normalize } from "./intent";
 import type { Intent, IntentPrediction } from "./intent";
@@ -70,6 +70,10 @@ export function getConversation(sessionId: string, customerId: string, locale: L
   };
   conversations.set(sessionId, created);
   return created;
+}
+
+function questionKind(conv: Conversation): "city" | "country" {
+  return customers().find((c) => c.customer_id === conv.customer_id)?.security_question ?? "city";
 }
 
 // ---- Handoff -------------------------------------------------------------------
@@ -157,7 +161,7 @@ async function resolveCard(conv: Conversation, text: string, trace: EngineTrace)
   trace.outcome = "clarify";
   conv.stage = "awaiting_card_choice";
   const list = cards.map((c) => cardLabel(conv.locale, c)).join(conv.locale === "es" ? " y " : " e ");
-  return { response: reply(m.chooseCard(list)) };
+  return { response: reply(m.chooseCard(list, new Set(cards.map((c) => c.type)).size > 1)) };
 }
 
 // ---- Steps -----------------------------------------------------------------------
@@ -189,7 +193,7 @@ async function proceedWithCard(conv: Conversation, card: CardView, trace: Engine
     conv.challenge_id = newId("chal");
     trace.outcome = "verification_requested";
     return reply(m.askVerification(label), [
-      { type: "step_up_verification", challenge_id: conv.challenge_id, question: securityQuestion[conv.locale] },
+      { type: "step_up_verification", challenge_id: conv.challenge_id, question: securityQuestion(conv.locale, questionKind(conv)) },
     ]);
   }
   return afterVerification(conv, card, trace);
@@ -342,7 +346,7 @@ export async function handleVerification(
     trace.outcome = "expired_request";
     return reply(m.expired);
   }
-  const customer = CUSTOMERS.find((c) => c.customer_id === conv.customer_id)!;
+  const customer = customers().find((c) => c.customer_id === conv.customer_id)!;
   conv.verification_attempts += 1;
   if (normalize(answer) === customer.security_answer) {
     conv.verified = true;
@@ -356,7 +360,7 @@ export async function handleVerification(
     conv.challenge_id = newId("chal");
     trace.outcome = "verification_retry";
     return reply(m.verificationRetry, [
-      { type: "step_up_verification", challenge_id: conv.challenge_id, question: securityQuestion[conv.locale] },
+      { type: "step_up_verification", challenge_id: conv.challenge_id, question: securityQuestion(conv.locale, questionKind(conv)) },
     ]);
   }
   conv.actions_taken.push("identity_verification_failed");

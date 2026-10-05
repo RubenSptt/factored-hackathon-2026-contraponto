@@ -1,0 +1,46 @@
+{
+  "version": "b14c3d48b519",
+  "sha256": "b14c3d48b5192b17c58b182256a708ff2fa5d547bd46066c09a49ade4dead5b4",
+  "built_at": "2026-10-05T18:39:19+00:00",
+  "source": {
+    "exported_at": "2026-09-29T02:52:19+00:00",
+    "tables": {
+      "agent_customers": {
+        "sha256": "852cec245f84fe6352c6a60086be06346d6b7f47aca9e297859e2392ff7f626c",
+        "rows": 91084,
+        "snowflake_query_id": "01c762cc-0001-adc1-0001-6cba00036742"
+      },
+      "agent_cards": {
+        "sha256": "1776052835ee377b44a1b598a62988a866e7aeca0c5fce08c85389bfc45bcb70",
+        "rows": 140040,
+        "snowflake_query_id": "01c762cc-0001-adc1-0001-6cba00036746"
+      },
+      "agent_transactions": {
+        "sha256": "0291a5219c6a3d6f69a66360ca80f4830fc7f0944b0c06a08ab0f2601a18c8e5",
+        "rows": 258561,
+        "snowflake_query_id": "01c762cc-0001-adc1-0001-6cba0003674a"
+      }
+    }
+  },
+  "sample": {
+    "seed": 42,
+    "strata": {
+      "suspected_fraud": 123,
+      "blocked_or_suspended": 60,
+      "several_cards": 80,
+      "other": 110
+    },
+    "fraud_score_cutoff": 35
+  },
+  "rows": {
+    "customers": 377,
+    "cards": 708,
+    "transactions": 1497
+  },
+  "rows_from_fixture": {
+    "customers": 4,
+    "cards": 5,
+    "transactions": 8
+  },
+  "changes_since_previous": null
+}

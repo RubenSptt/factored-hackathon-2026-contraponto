@@ -1,24 +1,26 @@
 # Evaluation: held-out conversations
 
-**Result:** on 31 held-out conversations the proposed system reaches the
-correct outcome in **29**, against **23** for the keyword baseline, with
+**Result:** on 35 held-out conversations the proposed system reaches the
+correct outcome in **33**, against **26** for the keyword baseline, with
 **0 unsafe outcomes** for both and no missed transfers to a human.
 
 Run on 2026-10-05 against `next dev` on one machine, intent model
-`intent-tfidf-lr-2026-10-05`. Raw output: [`results/tfidf.json`](results/tfidf.json),
-[`results/keywords.json`](results/keywords.json).
+`intent-tfidf-lr-2026-10-05`, agent snapshot `b14c3d48b519`. Raw output:
+[`results/tfidf.json`](results/tfidf.json), [`results/keywords.json`](results/keywords.json).
 
 ## Workload
 
-[`cases.json`](cases.json): 31 conversations written separately from the
-classifier's training sentences, 19 in Spanish and 12 in Portuguese, over the
-four test customers.
+[`cases.json`](cases.json): 35 conversations written separately from the
+classifier's training sentences, 22 in Spanish and 13 in Portuguese. 31 run on
+the labeled test fixture (C-…) and 4 on dataset customers from the agent
+snapshot (CLI-…): a disputed charge, a blocked card, and a customer with four
+cards.
 
 | Group | Cases | What it checks |
 | --- | --- | --- |
-| Normal | 8 | Cases the agent should resolve alone: status, transactions, lost card, block |
-| Human-required | 8 | Disputes, failed verification, tool failure, unblock, explicit request for a human |
-| Ambiguous or unsupported | 7 | Vague messages, two possible cards, other bank products |
+| Normal | 10 | Cases the agent should resolve alone: status, transactions, lost card, block |
+| Human-required | 9 | Disputes, failed verification, tool failure, unblock, explicit request for a human |
+| Ambiguous or unsupported | 8 | Vague messages, several possible cards, other bank products |
 | Security | 8 | Prompt injection (ES, PT), another customer's card, full card number, expired session, conversation hijack, replayed and forged confirmations |
 
 Each case states the expected outcome, whether a handoff is expected and
@@ -30,16 +32,16 @@ records. No model judges the answers.
 
 | Metric | Keyword baseline | Proposed |
 | --- | --- | --- |
-| Correct outcome | 23/31 | **29/31** |
-| By group: normal / human / ambiguous / security | 2/8 · 8/8 · 5/7 · 8/8 | 7/8 · 8/8 · 6/7 · 8/8 |
-| By language: Spanish / Portuguese | 16/19 · 7/12 | 17/19 · 12/12 |
-| Safe automated resolution, over in-scope cases (normal + human) | 2/16 | **7/16** |
-| Automation attempted, in-scope | 5/16 | 10/16 |
-| Containment (no transfer), in-scope | 7/16 | 8/16 |
-| Missed transfers | 0/8 | 0/8 |
-| Unnecessary transfers | 1/23 | 0/23 |
-| Unsafe outcomes | 0/31 | 0/31 |
-| Latency per request, p50 / p95 | 10 / 44 ms | 13 / 67 ms |
+| Correct outcome | 26/35 | **33/35** |
+| By group: normal / human / ambiguous / security | 4/10 · 8/9 · 6/8 · 8/8 | 9/10 · 9/9 · 7/8 · 8/8 |
+| By language: Spanish / Portuguese | 18/22 · 8/13 | 20/22 · 13/13 |
+| Safe automated resolution, over in-scope cases (normal + human) | 4/19 | **9/19** |
+| Automation attempted, in-scope | 7/19 | 13/19 |
+| Containment (no transfer), in-scope | 10/19 | 10/19 |
+| Missed transfers | 1/9 | **0/9** |
+| Unnecessary transfers | 1/26 | 0/26 |
+| Unsafe outcomes | 0/35 | 0/35 |
+| Latency per request, p50 / p95 | 13 / 47 ms | 15 / 45 ms |
 | Model cost per attempted case | USD 0 | USD 0 |
 
 Cost per successful automated resolution is USD 0 in model spend; hosting is a
@@ -68,8 +70,9 @@ matched the unblock rule and went to a human.
 
 ## Limits
 
-- 31 cases, written by the same person who wrote the system; zero observed
+- 35 cases, written by the same person who wrote the system; zero observed
   failures does not establish zero risk.
-- The customers are a 4-person fixture; behaviour across real customer
-  segments cannot be measured here.
+- Only 4 cases run on dataset customers; the labels in the dataset depend
+  only on the contact category (Gap 7), so outcomes by customer segment
+  cannot be compared meaningfully.
 - Portuguese is tested only on team-written cases (the dataset has none).

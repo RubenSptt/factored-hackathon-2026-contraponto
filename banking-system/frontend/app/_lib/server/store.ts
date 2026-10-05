@@ -4,8 +4,8 @@
 
 import type { HandoffCase, TransactionSummary } from "../api/contracts";
 import type { Locale } from "../i18n";
-import { CARDS } from "./fixture";
-import type { CardStatus } from "./fixture";
+import { cards } from "./data";
+import type { CardStatus } from "./data";
 import type { Intent } from "./intent";
 
 export type Stage =
@@ -65,7 +65,7 @@ const g = globalThis as unknown as { __cardSupportStore?: Store };
 export function store(): Store {
   if (!g.__cardSupportStore) {
     g.__cardSupportStore = {
-      cardStatus: new Map(CARDS.map((card) => [card.card_id, card.status])),
+      cardStatus: new Map(cards().map((card) => [card.card_id, card.status])),
       conversations: new Map(),
       handoffs: [],
       records: [],

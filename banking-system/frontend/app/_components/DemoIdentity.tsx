@@ -9,7 +9,7 @@ import { selectDemoCustomer, selectedDemoCustomer } from "../_lib/api/http-api";
 import { useLocale } from "../_lib/locale-context";
 import styles from "./DemoIdentity.module.css";
 
-type DemoCustomer = { id: string; name: string };
+type DemoCustomer = { id: string; name: string; source: "dataset_sample" | "test_fixture" };
 
 export default function DemoIdentity() {
   const { locale } = useLocale();
@@ -38,12 +38,14 @@ export default function DemoIdentity() {
       >
         {customers.map((customer) => (
           <option key={customer.id} value={customer.id}>
-            {customer.id} · {customer.name}
+            {customer.source === "test_fixture" ? (locale === "es" ? "Prueba" : "Teste") : "Dataset"} · {customer.id} · {customer.name}
           </option>
         ))}
       </select>
       <span className={styles.note}>
-        {locale === "es" ? "Datos ficticios de prueba" : "Dados fictícios de teste"}
+        {locale === "es"
+          ? "Dataset sintético del reto (muestra) y casos de prueba"
+          : "Dataset sintético do desafio (amostra) e casos de teste"}
       </span>
     </label>
   );

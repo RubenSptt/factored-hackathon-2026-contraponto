@@ -25,8 +25,8 @@ How the problem, the data and the design were chosen, with a timeline:
 | A problem supported by data | [Workflow selection](docs/workflow_selection.md), [data gaps](docs/data_gaps.md), [business case](docs/business_case.md), SQL in [`data-engineering/analysis/`](data-engineering/analysis/) |
 | A functioning AI system | [`app/_lib/server/`](banking-system/frontend/app/_lib/server/) (engine, tools, sessions) behind [`app/api/`](banking-system/frontend/app/api/) |
 | Controlled automation | [Policy](#controlled-automation) below; preconditions enforced in [`tools.ts`](banking-system/frontend/app/_lib/server/tools.ts) |
-| Sound data and ML practice | Snowflake pipeline with contracts and quality flags ([`data-engineering/`](data-engineering/)); learned component in [`ml/intent/`](ml/intent/) |
-| Measured quality and failure handling | [Evaluation](banking-system/evaluation/README.md): 31 held-out conversations, baseline vs. proposed |
+| Sound data and ML practice | Snowflake pipeline with contracts and quality flags, feeding the agent through a verified snapshot with update tests ([`data-engineering/`](data-engineering/)); learned component in [`ml/intent/`](ml/intent/) |
+| Measured quality and failure handling | [Evaluation](banking-system/evaluation/README.md): 35 held-out conversations, baseline vs. proposed |
 | A credible route to operation | [Execution records, retries, fallback](#operation) and the [AWS target architecture](docs/ARCHITECTURE.md) |
 
 ## Demo in two minutes
@@ -39,11 +39,16 @@ How the problem, the data and the design were chosen, with a timeline:
 6. Confirm the block. The agent blocks, re-reads the card status, and opens a case.
 7. Open **Agente humano**: the case is first in the queue, with verified facts, actions taken and open questions.
 
-Other test sessions: **C-1002 João** (Portuguese), **C-1003 Lucía** (the block
-service fails: bounded retries, no false claim, urgent handoff), **C-1004
-Marta** (card already blocked; asking to unblock goes to a human). Security
-answers: Medellín, Campinas, Rosario, Cali. All records are a team-generated
-test fixture.
+Other sessions in the picker:
+
+- **Dataset customers** (`CLI-…`): real records from the organizer's synthetic
+  dataset, taken from the stage 1 export: one with a transaction flagged by
+  `fraud_score ≥ 35`, one with a blocked card, one with four cards. Their
+  simulated security answer is their country (shown in the picker).
+- **Test fixture** (`C-…`): **C-1002 João** (Portuguese), **C-1003 Lucía**
+  (the block service fails on purpose: bounded retries, no false claim, urgent
+  handoff), **C-1004 Marta** (card already blocked; unblocking goes to a
+  human). Security answers: Medellín, Campinas, Rosario, Cali.
 
 ## Architecture
 
@@ -54,14 +59,20 @@ flowchart LR
     G --> C["Intent classifier<br/>TF-IDF + logistic regression"]
     C -->|"intent + confidence"| E["Rules engine<br/>clarify · abstain · step-up · confirm"]
     E --> T["Banking tools<br/>ownership · verification · confirmation<br/>bounded retries"]
-    T --> S[("Card state<br/>test fixture")]
+    T --> S[("Agent snapshot<br/>dataset sample + test fixture")]
+    P["Snowflake CLEAN.agent_*<br/>→ Parquet + manifest (SHA-256)"] -->|"build_snapshot.py<br/>checksums · contracts · sample"| S
     E --> H["Structured handoff<br/>priority by rule"]
     API --> R[("Execution records<br/>one JSON line per turn")]
     H --> D["Agent desk /agent"]
 ```
 
 One Next.js service holds the UI and the API, deployed on Render from
-[`render.yaml`](render.yaml). The original team designed the production target
+[`render.yaml`](render.yaml). The tools read the **agent snapshot**: 377 card
+holders, 708 cards and 1,497 transactions sampled from the stage 1 Parquet
+export (stratified, fixed seed, no names), plus the labeled test fixture. The
+build checks the export's checksums and the Pydantic contracts; the server
+re-checks the snapshot's checksum on start and refuses a file that changed
+outside the pipeline ([`pipelines/snapshot/`](data-engineering/pipelines/snapshot/)). The original team designed the production target
 on AWS (Bedrock AgentCore, Lambda tools, DynamoDB, Cognito, API Gateway; see
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)). The prototype keeps the same
 contracts so each piece maps one to one: the session cookie → Cognito, the
@@ -101,21 +112,22 @@ unblocked card, is urgent; a blocked card is high; the rest is normal.
 
 ## Results
 
-On 31 held-out conversations (19 Spanish, 12 Portuguese), same workload for
+On 35 held-out conversations (22 Spanish, 13 Portuguese; 4 of them on dataset
+customers), same workload for
 both systems ([details](banking-system/evaluation/README.md)):
 
 | Metric | Keyword baseline | Proposed (classifier) |
 | --- | --- | --- |
-| Conversations with the correct outcome | 23/31 | **29/31** |
-| Safe automated resolution (in-scope) | 2/16 | **7/16** (7 of 8 eligible) |
-| Missed transfers to a human | 0/8 | 0/8 |
-| Unnecessary transfers | 1/23 | 0/23 |
-| Unsafe outcomes | 0/31 | 0/31 |
-| Portuguese conversations correct | 7/12 | 12/12 |
+| Conversations with the correct outcome | 26/35 | **33/35** |
+| Safe automated resolution (in-scope) | 4/19 | **9/19** (9 of 10 eligible) |
+| Missed transfers to a human | 1/9 | **0/9** |
+| Unnecessary transfers | 1/26 | 0/26 |
+| Unsafe outcomes | 0/35 | 0/35 |
+| Portuguese conversations correct | 8/13 | 13/13 |
 
 Both systems record zero unsafe outcomes because safety lives in the rules and
 tools, not in the classifier: a better classifier resolves more cases, it does
-not make the system less safe. Zero observed failures in 31 cases does not
+not make the system less safe. Zero observed failures in 35 cases does not
 mean zero risk.
 
 Intent classifier alone, 102 held-out sentences: macro-F1 **0.77** vs. **0.59**
@@ -144,8 +156,11 @@ for the keyword baseline ([`ml/intent/`](ml/intent/)).
 
 - The dataset is synthetic and only in Spanish; Portuguese behaviour is tested
   on team-written cases only (Gap 1).
-- The demo uses a team-generated fixture shaped by the stage 1 contracts. No
-  customer-level row from the hackathon dataset is in this repository.
+- The agent snapshot holds a sample of the organizer's **synthetic** dataset
+  (no names, documents, contact data or full card numbers) plus a labeled,
+  team-generated test fixture. The full export stays out of the repository.
+- Dataset transactions end on 2026-06-18; "recent" means the latest in the
+  export, not today.
 - Security questions simulate step-up verification; they are not MFA.
 - The classifier's training and test sentences were written by one person;
   real customer phrasing will differ.
@@ -162,6 +177,9 @@ npm run dev                      # http://localhost:3000
 INTENT_MODEL=keywords npm run dev
 ```
 
+Rebuild the agent snapshot from the stage 1 export (Parquet files are not in
+the repo): `pip install pandas pyarrow pydantic && python data-engineering/pipelines/snapshot/build_snapshot.py --source <export folder>`.
+Update tests: `pip install pytest && python -m pytest data-engineering/pipelines/snapshot -q`.
 Retrain the classifier: `pip install scikit-learn && python ml/intent/train.py`.
 Evaluate: `pip install requests && python banking-system/evaluation/run_eval.py --base http://localhost:3000 --label tfidf`.
 
