@@ -1,13 +1,17 @@
 # Business case: cost per resolution
 
-**Answer (base scenario):** the agent resolves a card contact for about
-**USD 0.77**, against **USD 2.06** for a human agent, and pays for itself once
-it safely closes **25%** of the simple contacts it receives. Over the
-conservative-to-optimistic range the agent costs USD 0.10 to 3.02 per
-resolution: with every assumption against it, the agent loses money. Three
-design levers fix that, even in the worst case
-([Protecting the margin](#protecting-the-margin)), and the prototype measures
-the two inputs that decide the result (see [Next](#next)).
+**Answer (base scenario):** the agent **as built**, with no language model in
+the loop, resolves a card contact for about **USD 0.03**, against **USD 2.06**
+for a human agent. Each conversation costs only its infrastructure, so it pays
+for itself in all three scenarios, from about 1% containment.
+
+**If a language model were added**, as in the original AWS design (a Claude
+agent on AgentCore), the cost per resolution would be about **USD 0.77** in
+the base scenario and USD 0.10 to 3.02 across the range: with every assumption
+against it, that design loses money unless three design levers are applied
+([Protecting the margin](#protecting-the-margin)). This is the cost side of
+the decision explained in
+[Why no LLM in the loop](../README.md#why-no-llm-in-the-loop).
 
 The money is not the headline. What the agent changes first is risk: it blocks
 a card in the first conversation, after verification and explicit
@@ -26,7 +30,22 @@ script.
 ## Results
 
 Scenarios move every assumption together: **conservative** sets all of them
-against the agent, **optimistic** all in its favour.
+against the agent, **optimistic** all in its favour. Volumes, containment and
+human costs are the same for both designs; only the agent's cost per
+conversation changes.
+
+### As built: no language model in the loop
+
+| Metric | Conservative | Base | Optimistic |
+| --- | --- | --- | --- |
+| Agent cost per conversation (USD) | 0.01 | 0.01 | 0.01 |
+| Agent cost per resolution (USD) | 0.06 | 0.03 | 0.02 |
+| Containment needed to break even | 1% | 1% | 1% |
+| Net saving per 1,000 card contacts (USD) | 204 | 494 | 1,040 |
+| Net saving per year (USD) | 4,244 | 15,527 | 53,193 |
+| Unrecognized-charge intake calls, net saving per year (USD) | 1,075 | 2,611 | 5,538 |
+
+### With an LLM-based agent (original AWS design)
 
 | Metric | Conservative | Base | Optimistic |
 | --- | --- | --- | --- |
@@ -59,10 +78,10 @@ that scales to a real bank is the **saving per 1,000 contacts** and the
 | Containment of the simple pool | 30% / 50% / 70% | **Assumption** | Labels carry no signal (Gap 7), so it cannot be learned from the data |
 | Fully loaded agent hour, nearshore LATAM | USD 12 / 15 / 20 | **Assumption** | Published vendor rates: Colombia 12–18, Mexico 12–20 ([Call Force](https://callforce.global/blog/cost-of-nearshore-outsourcing/)); LATAM 10–30 ([Continental Message Solution](https://www.continentalmessage.com/blog/contact-center-outsourcing-cost-comparison/)) |
 | After-call work not in `duration_seconds` | 0% / 15% / 30% | **Assumption** | Not recorded in the dataset |
-| Model | Sonnet 4.5 regional / Sonnet 4.5 global / Haiku 4.5 | **Assumption** | Sonnet 4.5 is the model in the Strands agent today |
-| Price per million tokens (in / out) | 3.30 / 16.50; 3.00 / 15.00; 1.00 / 5.00 USD | Looked up | [Claude pricing](https://platform.claude.com/docs/en/about-claude/pricing) (regional endpoints on Bedrock +10%) |
-| Tokens per conversation (in / out) | 120k / 8k; 60k / 4k; 30k / 2k, no prompt caching | **Assumption** | ~8 turns, system prompt and tool schemas re-sent on each model call |
-| AgentCore, gateway, Lambda, DynamoDB | USD 0.01 per conversation | **Assumption** | [AgentCore pricing](https://aws.amazon.com/bedrock/agentcore/pricing/): CPU billed only while active, USD 0.005 per 1,000 gateway calls |
+| Model (LLM design only) | Sonnet 4.5 regional / Sonnet 4.5 global / Haiku 4.5 | **Assumption** | Sonnet 4.5 is the model in the original Strands agent scaffold |
+| Price per million tokens (in / out), LLM design only | 3.30 / 16.50; 3.00 / 15.00; 1.00 / 5.00 USD | Looked up | [Claude pricing](https://platform.claude.com/docs/en/about-claude/pricing) (regional endpoints on Bedrock +10%) |
+| Tokens per conversation (in / out), LLM design only | 120k / 8k; 60k / 4k; 30k / 2k, no prompt caching | **Assumption** | ~8 turns, system prompt and tool schemas re-sent on each model call |
+| Infrastructure per conversation (AgentCore, gateway, Lambda, DynamoDB), both designs | USD 0.01 per conversation | **Assumption** | [AgentCore pricing](https://aws.amazon.com/bedrock/agentcore/pricing/): CPU billed only while active, USD 0.005 per 1,000 gateway calls |
 | Intake call of an unrecognized charge | 434.4 s (mean Queja contact) | **Assumption** | `origin_interaction_id` is always null (Gap 12) |
 
 Prices were read on 2026-10-03.
@@ -91,7 +110,8 @@ Prices were read on 2026-10-03.
 
 ## Protecting the margin
 
-Agent cost is driven by tokens, and tokens are a design choice. Keeping every
+This section applies to the LLM design: as built, the agent spends no tokens.
+With a model, agent cost is driven by tokens, and tokens are a design choice. Keeping every
 business input of the conservative scenario (USD 12 per hour, 30%
 containment, Técnico only) and changing only how the agent is built:
 
@@ -116,14 +136,16 @@ The levers, in order of impact:
 4. **Scope gating.** Contacts the agent cannot resolve go straight to a human,
    so no conversation is paid for only to be handed off.
 
-Levers 1 and 2 belong to the agent's design and are recommendations for the
-backend, not changes made here.
+Levers 1 and 2 belong to an LLM-based design and are recommendations for it,
+not changes made here.
 
 ## Next
 
-- [ ] Measure tokens per conversation from AgentCore traces on the evaluation
-      set and replace the token assumption.
-- [ ] Measure the safe containment rate on the evaluation set (Phase 9:
-      "safe automated resolution rate", "cost per successful resolution").
-- [ ] Re-run the script with both and update this page.
-- [ ] Agree with the backend owner on prompt caching and model routing.
+- [x] Safe automated resolution measured on the evaluation set: 9 of 19
+      in-scope conversations (9 of 10 eligible). The workload was designed to
+      cover each case, not to match the real mix of contacts, so the
+      containment assumption above stays.
+- [ ] Measure containment on real traffic, the one input that decides the
+      saving for the agent as built.
+- [ ] If a model is added: measure tokens per conversation from traces, start
+      with prompt caching and model routing, and re-run the script.

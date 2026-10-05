@@ -1,7 +1,14 @@
 """Business case estimate for the Card Support agent (Q12).
 
 Turns the Q12 results (measured in Snowflake) and a short list of explicit
-assumptions into three scenarios: conservative, base and optimistic.
+assumptions into three scenarios: conservative, base and optimistic, for two
+designs of the agent:
+
+- as built: the submitted agent, with no language model in the loop (a local
+  intent classifier, rules and tools), so each conversation costs only its
+  infrastructure;
+- with an LLM: the original AWS target design, a Claude agent on AgentCore,
+  where tokens per conversation drive the cost.
 
 Measured inputs live in MEASURED and come from Q12 / profile_core.md.
 Everything in ASSUMPTIONS is a team assumption with its source; change it
@@ -15,7 +22,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 # ---------------------------------------------------------------------------
 # Measured in the data (Q12, run 2026-10-05; profile_core.md; Q08)
@@ -82,6 +89,11 @@ MITIGATED = Scenario(
     "conservative + levers", 0.0, 0.30, 12.0, 0.00, "Claude Sonnet 4.5 (regional)", 60_000, 4_000,
     cached_input_share=0.70, small_model_share=0.80,
 )
+
+
+def as_built(s: Scenario) -> Scenario:
+    """The same scenario for the submitted agent: no model call, infrastructure only."""
+    return replace(s, name=f"{s.name}, as built", input_tokens=0, output_tokens=0)
 
 
 def agent_cost_per_conversation(s: Scenario) -> float:
@@ -159,10 +171,11 @@ def write_svg(rows: list[dict], path: str) -> None:
     """Dot (base) + whisker (conservative..optimistic) per actor, one shared USD axis."""
     by = {r["scenario"]: r for r in rows}
     actors = [
-        ("Human agent", "human_cost_per_resolution", "#eb6834"),
-        ("AI agent", "agent_cost_per_resolution", "#2a78d6"),
+        ("Human agent", "human_cost_per_resolution", "#eb6834", ""),
+        ("Agent as built", "agent_cost_per_resolution", "#2a78d6", ", as built"),
+        ("Agent with an LLM", "agent_cost_per_resolution", "#7b8794", ""),
     ]
-    w, h, left, right, top = 760, 300, 150, 40, 70
+    w, h, left, right, top = 760, 380, 170, 40, 70
     x_max = 3.5
     sx = lambda v: left + v / x_max * (w - left - right)  # noqa: E731
     out = [
@@ -178,18 +191,21 @@ def write_svg(rows: list[dict], path: str) -> None:
         x = sx(t)
         out.append(f'<line x1="{x}" y1="{top}" x2="{x}" y2="{h - 50}" stroke="#e4e3df" stroke-width="1"/>')
         out.append(f'<text x="{x}" y="{h - 30}" font-size="12" fill="#52514e" text-anchor="middle">${t}</text>')
-    for i, (label, key, color) in enumerate(actors):
+    for i, (label, key, color, suffix) in enumerate(actors):
         y = top + 50 + i * 80
-        vals = [by[n][key] for n in ("conservative", "base", "optimistic")]
-        lo, hi, base = min(vals), max(vals), by["base"][key]
+        vals = [by[n + suffix][key] for n in ("conservative", "base", "optimistic")]
+        lo, hi, base = min(vals), max(vals), by["base" + suffix][key]
         out.append(f'<text x="24" y="{y + 5}" font-size="14" fill="#0b0b0b">{label}</text>')
         out.append(f'<line x1="{sx(lo)}" y1="{y}" x2="{sx(hi)}" y2="{y}" stroke="{color}" stroke-width="2" stroke-linecap="round"/>')
         for v in (lo, hi):
             out.append(f'<line x1="{sx(v)}" y1="{y - 7}" x2="{sx(v)}" y2="{y + 7}" stroke="{color}" stroke-width="2"/>')
         out.append(f'<circle cx="{sx(base)}" cy="{y}" r="7" fill="{color}" stroke="#fcfcfb" stroke-width="2"/>')
         out.append(f'<text x="{sx(base)}" y="{y - 16}" font-size="13" font-weight="600" fill="#0b0b0b" text-anchor="middle">${base:.2f}</text>')
-        out.append(f'<text x="{sx(lo)}" y="{y + 24}" font-size="11" fill="#52514e" text-anchor="middle">${lo:.2f}</text>')
-        out.append(f'<text x="{sx(hi)}" y="{y + 24}" font-size="11" fill="#52514e" text-anchor="middle">${hi:.2f}</text>')
+        if sx(hi) - sx(lo) < 40:  # range too narrow for two labels: one label beside it
+            out.append(f'<text x="{sx(hi) + 14}" y="{y + 4}" font-size="11" fill="#52514e">${lo:.2f} to ${hi:.2f}</text>')
+        else:
+            out.append(f'<text x="{sx(lo)}" y="{y + 24}" font-size="11" fill="#52514e" text-anchor="middle">${lo:.2f}</text>')
+            out.append(f'<text x="{sx(hi)}" y="{y + 24}" font-size="11" fill="#52514e" text-anchor="middle">${hi:.2f}</text>')
     out.append("</svg>")
     with open(path, "w", encoding="utf-8") as fh:
         fh.write("\n".join(out))
@@ -199,10 +215,14 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--svg", help="write the cost-per-resolution chart to this path")
     args = parser.parse_args()
-    rows = [estimate(s) for s in SCENARIOS]
-    print_table(rows + [estimate(MITIGATED)])
+    built = [estimate(as_built(s)) for s in SCENARIOS]
+    llm = [estimate(s) for s in SCENARIOS]
+    print("As built (no language model in the loop):\n")
+    print_table(built)
+    print("\nWith an LLM-based agent (original AWS target design):\n")
+    print_table(llm + [estimate(MITIGATED)])
     if args.svg:
-        write_svg(rows, args.svg)
+        write_svg(built + llm, args.svg)
 
 
 if __name__ == "__main__":

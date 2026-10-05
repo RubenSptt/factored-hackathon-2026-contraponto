@@ -203,7 +203,7 @@ for the keyword baseline ([`ml/intent/`](ml/intent/)).
 | Autonomy vs. human oversight | The agent acts alone only to protect (block a card, after step-up and confirmation); disputes, unblocks and failed verification go to a human | Fewer cases closed without a person: 10/19 in-scope contained | 0/9 missed transfers, 0/35 unsafe |
 | Accuracy vs. autonomy | Below 0.40 confidence the agent asks instead of acting | About 13% of held-out sentences get a clarifying question (coverage 87%) | 86.5% intent accuracy when it answers; N08 was right but asked |
 | Latency | Deterministic rules and tools, no model call per turn | Less flexible wording than a generative model | p50 / p95 210 / 232 ms deployed, measured from Colombia |
-| Cost | No paid model; free hosting tiers | Cold start of about 50 s after 15 idle minutes | USD 0 model spend per conversation; projection USD 0.77 vs 2.06 per resolution ([business case](docs/business_case.md)) |
+| Cost | No paid model; free hosting tiers | Cold start of about 50 s after 15 idle minutes | Projection per resolution: USD 0.03 as built vs 2.06 for a human; 0.77 if an LLM were added ([business case](docs/business_case.md)) |
 | Flexibility vs. verifiability | Template replies filled with tool results; no LLM in the loop | Out-of-scope questions get a polite refusal, not an answer | The agent cannot state a fact the tools did not return |
 | Freshness vs. simplicity | Daily batch load with lineage; card status changes are live events | Transactions are as fresh as the last export (ends 2026-06-18) | `/api/health` and the agent desk show the export date and load run |
 
