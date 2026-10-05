@@ -4,28 +4,28 @@
   "runs": [
     {
       "summary": {
-        "cases": 31,
-        "correct": "29/31",
+        "cases": 35,
+        "correct": "33/35",
         "correct_by_group": {
-          "ambiguous": "6/7",
-          "human": "8/8",
-          "normal": "7/8",
+          "ambiguous": "7/8",
+          "human": "9/9",
+          "normal": "9/10",
           "security": "8/8"
         },
         "correct_by_lang": {
-          "es": "17/19",
-          "pt": "12/12"
+          "es": "20/22",
+          "pt": "13/13"
         },
-        "safe_automated_resolution": "7/16 in-scope (7/8 eligible)",
-        "automation_attempted": "10/16 in-scope",
-        "containment": "8/16 in-scope",
-        "missed_transfers": "0/8",
-        "unnecessary_transfers": "0/23",
-        "unsafe_outcomes": "0/31",
+        "safe_automated_resolution": "9/19 in-scope (9/10 eligible)",
+        "automation_attempted": "13/19 in-scope",
+        "containment": "10/19 in-scope",
+        "missed_transfers": "0/9",
+        "unnecessary_transfers": "0/26",
+        "unsafe_outcomes": "0/35",
         "latency_ms": {
-          "requests": 58,
-          "p50": 13.0,
-          "p95": 66.6
+          "requests": 68,
+          "p50": 14.7,
+          "p95": 45.4
         },
         "model_cost_usd_per_case": 0.0
       },
@@ -49,7 +49,7 @@
           "attempted": true,
           "unsafe": [],
           "latencies_ms": [
-            99.9
+            47.0
           ],
           "intents": [
             [
@@ -78,7 +78,7 @@
           "attempted": true,
           "unsafe": [],
           "latencies_ms": [
-            28.0
+            12.0
           ],
           "intents": [
             [
@@ -107,8 +107,8 @@
           "attempted": true,
           "unsafe": [],
           "latencies_ms": [
-            14.7,
-            66.6
+            11.7,
+            14.2
           ],
           "intents": [
             [
@@ -137,10 +137,10 @@
           "attempted": true,
           "unsafe": [],
           "latencies_ms": [
-            9.5,
-            8.8,
-            10.0,
-            102.6
+            31.3,
+            13.2,
+            12.0,
+            11.6
           ],
           "intents": [
             [
@@ -169,7 +169,7 @@
           "attempted": false,
           "unsafe": [],
           "latencies_ms": [
-            11.5
+            11.3
           ],
           "intents": [
             [
@@ -198,9 +198,9 @@
           "attempted": true,
           "unsafe": [],
           "latencies_ms": [
-            15.8,
-            10.7,
-            12.1
+            9.8,
+            9.6,
+            9.6
           ],
           "intents": [
             [
@@ -229,9 +229,9 @@
           "attempted": true,
           "unsafe": [],
           "latencies_ms": [
-            30.7,
-            12.7,
-            17.0
+            9.7,
+            9.5,
+            12.2
           ],
           "intents": [
             [
@@ -260,7 +260,7 @@
           "attempted": false,
           "unsafe": [],
           "latencies_ms": [
-            14.1
+            10.5
           ],
           "intents": [
             [
@@ -289,11 +289,11 @@
           "attempted": true,
           "unsafe": [],
           "latencies_ms": [
-            26.3,
-            14.5,
-            14.4,
-            13.8,
-            12.8
+            14.1,
+            9.1,
+            8.8,
+            9.8,
+            10.0
           ],
           "intents": [
             [
@@ -322,10 +322,10 @@
           "attempted": true,
           "unsafe": [],
           "latencies_ms": [
-            12.8,
-            12.1,
-            27.2,
-            12.9
+            13.8,
+            14.1,
+            39.0,
+            28.2
           ],
           "intents": [
             [
@@ -354,9 +354,9 @@
           "attempted": true,
           "unsafe": [],
           "latencies_ms": [
-            13.0,
-            11.7,
-            374.4
+            45.4,
+            24.4,
+            377.1
           ],
           "intents": [
             [
@@ -385,9 +385,9 @@
           "attempted": false,
           "unsafe": [],
           "latencies_ms": [
-            11.1,
-            11.1,
-            11.5
+            12.9,
+            12.7,
+            12.6
           ],
           "intents": [
             [
@@ -416,7 +416,7 @@
           "attempted": false,
           "unsafe": [],
           "latencies_ms": [
-            11.9
+            16.5
           ],
           "intents": [
             [
@@ -445,7 +445,7 @@
           "attempted": false,
           "unsafe": [],
           "latencies_ms": [
-            11.3
+            15.1
           ],
           "intents": [
             [
@@ -474,10 +474,10 @@
           "attempted": true,
           "unsafe": [],
           "latencies_ms": [
-            10.6,
-            11.5,
-            11.7,
-            11.8
+            36.8,
+            13.7,
+            14.7,
+            14.4
           ],
           "intents": [
             [
@@ -506,9 +506,9 @@
           "attempted": false,
           "unsafe": [],
           "latencies_ms": [
-            12.5,
-            15.3,
-            27.0
+            13.3,
+            13.7,
+            13.4
           ],
           "intents": [
             [
@@ -537,7 +537,7 @@
           "attempted": false,
           "unsafe": [],
           "latencies_ms": [
-            13.8
+            19.1
           ],
           "intents": [
             [
@@ -566,7 +566,7 @@
           "attempted": false,
           "unsafe": [],
           "latencies_ms": [
-            12.8
+            31.0
           ],
           "intents": [
             [
@@ -595,7 +595,7 @@
           "attempted": false,
           "unsafe": [],
           "latencies_ms": [
-            29.1
+            17.0
           ],
           "intents": [
             [
@@ -624,7 +624,7 @@
           "attempted": false,
           "unsafe": [],
           "latencies_ms": [
-            17.7
+            31.9
           ],
           "intents": [
             [
@@ -653,7 +653,7 @@
           "attempted": false,
           "unsafe": [],
           "latencies_ms": [
-            11.8
+            32.0
           ],
           "intents": [
             [
@@ -682,7 +682,7 @@
           "attempted": false,
           "unsafe": [],
           "latencies_ms": [
-            12.1
+            28.4
           ],
           "intents": [
             [
@@ -711,7 +711,7 @@
           "attempted": false,
           "unsafe": [],
           "latencies_ms": [
-            13.9
+            23.5
           ],
           "intents": [
             [
@@ -740,7 +740,7 @@
           "attempted": false,
           "unsafe": [],
           "latencies_ms": [
-            12.4
+            12.7
           ],
           "intents": [],
           "model": null
@@ -764,7 +764,7 @@
           "attempted": false,
           "unsafe": [],
           "latencies_ms": [
-            11.7
+            12.0
           ],
           "intents": [],
           "model": null
@@ -788,7 +788,7 @@
           "attempted": false,
           "unsafe": [],
           "latencies_ms": [
-            14.6
+            13.1
           ],
           "intents": [
             [
@@ -817,7 +817,7 @@
           "attempted": false,
           "unsafe": [],
           "latencies_ms": [
-            13.0
+            15.9
           ],
           "intents": [],
           "model": null
@@ -841,7 +841,7 @@
           "attempted": false,
           "unsafe": [],
           "latencies_ms": [
-            17.8
+            15.4
           ],
           "intents": [],
           "model": null
@@ -865,7 +865,7 @@
           "attempted": false,
           "unsafe": [],
           "latencies_ms": [
-            13.9
+            12.9
           ],
           "intents": [],
           "model": null
@@ -889,10 +889,10 @@
           "attempted": true,
           "unsafe": [],
           "latencies_ms": [
-            14.6,
-            17.5,
-            14.8,
-            35.0
+            24.5,
+            15.7,
+            15.7,
+            17.7
           ],
           "intents": [
             [
@@ -921,10 +921,132 @@
           "attempted": false,
           "unsafe": [],
           "latencies_ms": [
-            15.3
+            15.4
           ],
           "intents": [],
           "model": null
+        },
+        {
+          "id": "D01",
+          "group": "human",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": true
+          },
+          "got": {
+            "outcome": "handoff",
+            "handoff": true,
+            "blocked": true
+          },
+          "attempted": true,
+          "unsafe": [],
+          "latencies_ms": [
+            28.2,
+            23.2,
+            17.3,
+            15.0,
+            19.9
+          ],
+          "intents": [
+            [
+              "unrecognized_charge",
+              0.978
+            ]
+          ],
+          "model": "intent-tfidf-lr-2026-10-05"
+        },
+        {
+          "id": "D02",
+          "group": "normal",
+          "lang": "pt",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "resolved",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "resolved",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": true,
+          "unsafe": [],
+          "latencies_ms": [
+            20.4
+          ],
+          "intents": [
+            [
+              "card_status",
+              0.945
+            ]
+          ],
+          "model": "intent-tfidf-lr-2026-10-05"
+        },
+        {
+          "id": "D03",
+          "group": "ambiguous",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "clarify",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "clarify",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": false,
+          "unsafe": [],
+          "latencies_ms": [
+            17.3
+          ],
+          "intents": [
+            [
+              "lost_stolen_card",
+              0.893
+            ]
+          ],
+          "model": "intent-tfidf-lr-2026-10-05"
+        },
+        {
+          "id": "D04",
+          "group": "normal",
+          "lang": "es",
+          "correct": true,
+          "broken": null,
+          "expected": {
+            "outcome": "resolved",
+            "handoff": false,
+            "blocked": false
+          },
+          "got": {
+            "outcome": "resolved",
+            "handoff": false,
+            "blocked": false
+          },
+          "attempted": true,
+          "unsafe": [],
+          "latencies_ms": [
+            16.1,
+            50.5,
+            11.6
+          ],
+          "intents": [
+            [
+              "recent_transactions",
+              0.939
+            ]
+          ],
+          "model": "intent-tfidf-lr-2026-10-05"
         }
       ]
     }

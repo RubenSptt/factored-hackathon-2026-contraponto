@@ -1,0 +1,192 @@
+{
+ "_note": "LABELED TEST FIXTURE, team-generated: customers whose behaviour the evaluation relies on (two cards, a block service that fails on purpose, a card already blocked). Not from the dataset. Transaction times are relative (hours_ago).",
+ "customers": [
+  {
+   "customer_id": "C-1001",
+   "country": "Colombia",
+   "segment": null,
+   "customer_status": "Active",
+   "source": "test_fixture",
+   "display_name": "Ana (2 tarjetas)",
+   "security_answer": "medellin"
+  },
+  {
+   "customer_id": "C-1002",
+   "country": "Colombia",
+   "segment": null,
+   "customer_status": "Active",
+   "source": "test_fixture",
+   "display_name": "João (1 cartão)",
+   "security_answer": "campinas"
+  },
+  {
+   "customer_id": "C-1003",
+   "country": "Argentina",
+   "segment": null,
+   "customer_status": "Active",
+   "source": "test_fixture",
+   "display_name": "Lucía (falla del sistema de bloqueo)",
+   "security_answer": "rosario"
+  },
+  {
+   "customer_id": "C-1004",
+   "country": "Colombia",
+   "segment": null,
+   "customer_status": "Active",
+   "source": "test_fixture",
+   "display_name": "Marta (tarjeta ya bloqueada)",
+   "security_answer": "cali"
+  }
+ ],
+ "cards": [
+  {
+   "card_id": "K-1",
+   "customer_id": "C-1001",
+   "type": "credit",
+   "last_four": "4821",
+   "status": "active",
+   "expiration": "2028-09",
+   "currency": "COP",
+   "dq_flags": null
+  },
+  {
+   "card_id": "K-2",
+   "customer_id": "C-1001",
+   "type": "debit",
+   "last_four": "1290",
+   "status": "active",
+   "expiration": "2027-03",
+   "currency": "COP",
+   "dq_flags": null
+  },
+  {
+   "card_id": "K-3",
+   "customer_id": "C-1002",
+   "type": "credit",
+   "last_four": "7310",
+   "status": "active",
+   "expiration": "2029-01",
+   "currency": "USD",
+   "dq_flags": null
+  },
+  {
+   "card_id": "K-4",
+   "customer_id": "C-1003",
+   "type": "credit",
+   "last_four": "5544",
+   "status": "active",
+   "expiration": "2028-05",
+   "currency": "ARS",
+   "dq_flags": null,
+   "simulate_block_failure": true
+  },
+  {
+   "card_id": "K-5",
+   "customer_id": "C-1004",
+   "type": "debit",
+   "last_four": "6402",
+   "status": "blocked",
+   "expiration": "2027-11",
+   "currency": "COP",
+   "dq_flags": null
+  }
+ ],
+ "transactions": [
+  {
+   "transaction_id": "T-9001",
+   "card_id": "K-1",
+   "hours_ago": 2,
+   "merchant": "Electrónica Express",
+   "city": "Guadalajara",
+   "amount": 2450000,
+   "currency": "COP",
+   "status": "Approved",
+   "fraud_score": 87,
+   "dq_flags": null
+  },
+  {
+   "transaction_id": "T-9002",
+   "card_id": "K-1",
+   "hours_ago": 30,
+   "merchant": "Movilidad Urbana",
+   "city": "Medellín",
+   "amount": 18500,
+   "currency": "COP",
+   "status": "Approved",
+   "fraud_score": 4,
+   "dq_flags": null
+  },
+  {
+   "transaction_id": "T-9003",
+   "card_id": "K-1",
+   "hours_ago": 75,
+   "merchant": null,
+   "city": null,
+   "amount": 96300,
+   "currency": "COP",
+   "status": "Approved",
+   "fraud_score": null,
+   "dq_flags": "missing_merchant,missing_city,missing_fraud_score"
+  },
+  {
+   "transaction_id": "T-9004",
+   "card_id": "K-2",
+   "hours_ago": 5,
+   "merchant": "Supermercado Central",
+   "city": "Medellín",
+   "amount": 152800,
+   "currency": "COP",
+   "status": "Approved",
+   "fraud_score": 2,
+   "dq_flags": null
+  },
+  {
+   "transaction_id": "T-9005",
+   "card_id": "K-3",
+   "hours_ago": 3,
+   "merchant": "Livraria Paulista",
+   "city": "São Paulo",
+   "amount": 42.9,
+   "currency": "USD",
+   "status": "Approved",
+   "fraud_score": 6,
+   "dq_flags": null
+  },
+  {
+   "transaction_id": "T-9006",
+   "card_id": "K-3",
+   "hours_ago": 26,
+   "merchant": "Air Connect",
+   "city": "Lima",
+   "amount": 610,
+   "currency": "USD",
+   "status": "Approved",
+   "fraud_score": 64,
+   "dq_flags": null
+  },
+  {
+   "transaction_id": "T-9007",
+   "card_id": "K-4",
+   "hours_ago": 1,
+   "merchant": "Tienda Online 24",
+   "city": "Buenos Aires",
+   "amount": 380000,
+   "currency": "ARS",
+   "status": "Approved",
+   "fraud_score": 91,
+   "dq_flags": null
+  },
+  {
+   "transaction_id": "T-9008",
+   "card_id": "K-5",
+   "hours_ago": 40,
+   "merchant": "Farmacia Norte",
+   "city": "Cali",
+   "amount": 54000,
+   "currency": "COP",
+   "status": "Approved",
+   "fraud_score": 3,
+   "dq_flags": null
+  }
+ ]
+}

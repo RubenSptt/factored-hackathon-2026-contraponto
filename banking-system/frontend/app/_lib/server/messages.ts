@@ -22,10 +22,14 @@ export function cardLabel(locale: Locale, card: CardRef): string {
     : `cartão ${typeName.pt[card.type]} •••• ${card.last_four}`;
 }
 
-export const securityQuestion: Record<Locale, string> = {
-  es: "¿En qué ciudad abriste tu cuenta con el banco?",
-  pt: "Em qual cidade você abriu sua conta no banco?",
+const QUESTIONS = {
+  city: { es: "¿En qué ciudad abriste tu cuenta con el banco?", pt: "Em qual cidade você abriu sua conta no banco?" },
+  country: { es: "¿En qué país abriste tu cuenta con el banco?", pt: "Em qual país você abriu sua conta no banco?" },
 };
+
+export function securityQuestion(locale: Locale, kind: "city" | "country"): string {
+  return QUESTIONS[kind][locale];
+}
 
 export const M = {
   es: {
@@ -39,10 +43,11 @@ export const M = {
       "No puedo hacer eso. Solo trabajo con las tarjetas de la persona que inició sesión y siempre sigo los pasos de seguridad.",
     cardNumber:
       "Por seguridad no escribas el número completo de la tarjeta. Basta con los últimos 4 dígitos.",
-    chooseCard: (cards: string) => `¿Sobre cuál tarjeta? Tienes ${cards}. Dime los últimos 4 dígitos o si es la de crédito o la débito.`,
+    chooseCard: (cards: string, mixed: boolean) =>
+      `¿Sobre cuál tarjeta? Tienes ${cards}. Dime los últimos 4 dígitos` + (mixed ? " o si es la de crédito o la débito." : "."),
     notOwned: (lastFour: string) => `No encuentro una tarjeta terminada en ${lastFour} en tu perfil. Solo puedo ver las tarjetas a tu nombre.`,
     noCards: "No encuentro tarjetas activas a tu nombre. Te paso con un agente humano.",
-    status: (card: string, status: string, exp: string) => `Tu ${card} está ${status}. Vence en ${exp}.`,
+    status: (card: string, status: string, exp: string | null) => `Tu ${card} está ${status}.` + (exp ? ` Vence en ${exp}.` : ""),
     statusBlockedHint: " Si quieres reactivarla, eso lo hace un agente humano tras verificar tu identidad.",
     askVerification: (card: string) => `Antes de revisar tu ${card} necesito confirmar que eres tú. Responde la pregunta de seguridad.`,
     verificationPending: "Primero responde la pregunta de seguridad de arriba.",
@@ -90,10 +95,11 @@ export const M = {
     injection:
       "Não posso fazer isso. Só trabalho com os cartões da pessoa que fez login e sempre sigo as etapas de segurança.",
     cardNumber: "Por segurança, não escreva o número completo do cartão. Bastam os últimos 4 dígitos.",
-    chooseCard: (cards: string) => `Sobre qual cartão? Você tem ${cards}. Me diga os últimos 4 dígitos ou se é o de crédito ou o de débito.`,
+    chooseCard: (cards: string, mixed: boolean) =>
+      `Sobre qual cartão? Você tem ${cards}. Me diga os últimos 4 dígitos` + (mixed ? " ou se é o de crédito ou o de débito." : "."),
     notOwned: (lastFour: string) => `Não encontro um cartão com final ${lastFour} no seu perfil. Só posso ver os cartões em seu nome.`,
     noCards: "Não encontro cartões ativos em seu nome. Vou passar para um atendente humano.",
-    status: (card: string, status: string, exp: string) => `Seu ${card} está ${status}. Vence em ${exp}.`,
+    status: (card: string, status: string, exp: string | null) => `Seu ${card} está ${status}.` + (exp ? ` Vence em ${exp}.` : ""),
     statusBlockedHint: " Para reativá-lo, um atendente humano faz isso depois de verificar sua identidade.",
     askVerification: (card: string) => `Antes de revisar seu ${card}, preciso confirmar que é você. Responda à pergunta de segurança.`,
     verificationPending: "Primeiro responda à pergunta de segurança acima.",

@@ -9,8 +9,8 @@ verify, escalate). Unrecognized charges became the business problem because
 they are the clearest pain in the data and because no complaint in the dataset
 reaches a human linked to the right card. The data then decided the
 architecture: the text and the labels carry no learnable signal, so the agent
-is a learned intent classifier plus deterministic rules and tools, measured on
-held-out conversations.
+is a learned intent classifier plus deterministic rules and tools that read a
+verified snapshot of the cleaned data, measured on held-out conversations.
 
 Each section links to the evidence; nothing here is a new claim.
 
@@ -86,6 +86,15 @@ three design levers fix that.
   the agent subset and a Parquet export with a manifest (row counts, columns,
   SHA-256 checksums, `query_id`); Pydantic contracts validate every exported
   row ([`data-engineering/`](../data-engineering/)).
+- **From the export to the agent:** [`build_snapshot.py`](../data-engineering/pipelines/snapshot/build_snapshot.py)
+  checks every Parquet file against the manifest's SHA-256, validates the rows
+  it keeps against the contracts, draws a stratified sample with a fixed seed
+  (123 customers with a transaction at `fraud_score ≥ 35`, 60 with a blocked or
+  suspended card, 80 with several cards, 110 others; closed cards and names
+  left out), merges the labeled test fixture and writes the snapshot with its
+  own manifest: source checksums, Snowflake `query_id`s, row counts, strata and
+  a diff against the previous snapshot. The server re-checks that checksum on
+  start and refuses a snapshot that changed outside the pipeline.
 
 ### Update and freshness policy
 
@@ -102,19 +111,23 @@ production:
   the export stops; the agent keeps the last good snapshot.
 - **Window.** The agent subset keeps 6 months of card transactions (one `SET`
   in `04_agent_tables.sql`).
-- **Freshness check.** The manifest records each export; the backend refuses
-  a snapshot whose checksums do not match.
+- **Freshness check.** Each snapshot records its build time and the export
+  it came from; `/api/health` reports both, plus whether the checksum passed.
 
-Not done: the brief asks to demonstrate update correctness with a labeled test
-fixture when data is static. That fixture was not built in time.
+**Update correctness, shown on a labeled test fixture**
+([`test_snapshot.py`](../data-engineering/pipelines/snapshot/test_snapshot.py),
+4 tests, all passing): the same export always builds the same snapshot; a v2
+export with one card blocked and one new transaction yields a diff with
+exactly those two changes; an export altered after its manifest was written
+is refused; a row that breaks the contract is refused.
 
 ## 5. The system and how it was measured
 
 - Architecture and policy: [`README.md`](../README.md).
 - Learned component: intent classifier, macro-F1 0.77 vs. 0.59 for keyword
   rules on 102 held-out sentences ([`ml/intent/`](../ml/intent/)).
-- End to end: 31 held-out conversations, 29 correct vs. 23 for the baseline,
-  0 unsafe outcomes in both
+- End to end: 35 held-out conversations (4 on dataset customers), 33 correct
+  vs. 26 for the baseline, 0 unsafe outcomes in both
   ([`banking-system/evaluation/`](../banking-system/evaluation/)).
 
 ## 6. Timeline
@@ -127,7 +140,7 @@ fixture when data is static. That fixture was not built in time.
 | 28 September | Stage 1: contracts, cleaning and the agent subset export. |
 | 2 October | Roles change: the lead takes the AWS backend; the data engineer takes the frontend. The exploration evidence is merged. |
 | 3 October | Customer chat and agent desk UI in review. In the afternoon the lead formally withdraws after concluding that her circumstances did not allow her to continue; it is agreed that her contributions stay in the project with her credit. |
-| 5 October | The remaining members have also withdrawn. The data engineer finishes alone: business case (Q12), a new public repository with the full history, the rules engine and classifier, deployment, evaluation and this report. |
+| 5 October | The remaining members have also withdrawn. The data engineer finishes alone: business case (Q12), a new public repository with the full history, the rules engine and classifier, deployment, evaluation, the snapshot step that connects the stage 1 export to the agent, and this report. |
 
 The scope was adjusted to what one person could build and verify in a day.
 The AWS architecture stays as the documented route to production rather than
