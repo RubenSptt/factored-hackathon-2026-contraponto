@@ -1,5 +1,7 @@
 // In-memory state for the prototype: card status, conversations, handoffs and
 // execution records. One Node process holds it (see README: capacity limits).
+// Card status lives here only in snapshot mode; with Postgres it is the
+// append-only card_status_events table (see repository.ts).
 // In production this is DynamoDB, as in the original team architecture.
 
 import type { HandoffCase, TransactionSummary } from "../api/contracts";

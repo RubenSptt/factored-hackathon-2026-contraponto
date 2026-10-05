@@ -25,7 +25,7 @@ How the problem, the data and the design were chosen, with a timeline:
 | A problem supported by data | [Workflow selection](docs/workflow_selection.md), [data gaps](docs/data_gaps.md), [business case](docs/business_case.md), SQL in [`data-engineering/analysis/`](data-engineering/analysis/) |
 | A functioning AI system | [`app/_lib/server/`](banking-system/frontend/app/_lib/server/) (engine, tools, sessions) behind [`app/api/`](banking-system/frontend/app/api/) |
 | Controlled automation | [Policy](#controlled-automation) below; preconditions enforced in [`tools.ts`](banking-system/frontend/app/_lib/server/tools.ts) |
-| Sound data and ML practice | Snowflake pipeline with contracts and quality flags, feeding the agent through a verified snapshot with update tests ([`data-engineering/`](data-engineering/)); learned component in [`ml/intent/`](ml/intent/) |
+| Sound data and ML practice | Snowflake pipeline with contracts and quality flags, loaded whole into a PostgreSQL operational store with lineage and an append-only audit, and a verified snapshot as fallback; update tests for both ([`data-engineering/`](data-engineering/)); learned component in [`ml/intent/`](ml/intent/) |
 | Measured quality and failure handling | [Evaluation](banking-system/evaluation/README.md): 35 held-out conversations, baseline vs. proposed |
 | A credible route to operation | [Execution records, retries, fallback](#operation) and the [AWS target architecture](docs/ARCHITECTURE.md) |
 
@@ -59,24 +59,37 @@ flowchart LR
     G --> C["Intent classifier<br/>TF-IDF + logistic regression"]
     C -->|"intent + confidence"| E["Rules engine<br/>clarify · abstain · step-up · confirm"]
     E --> T["Banking tools<br/>ownership · verification · confirmation<br/>bounded retries"]
-    T --> S[("Agent snapshot<br/>dataset sample + test fixture")]
-    P["Snowflake CLEAN.agent_*<br/>→ Parquet + manifest (SHA-256)"] -->|"build_snapshot.py<br/>checksums · contracts · sample"| S
+    T --> PG[("PostgreSQL (Neon)<br/>full export + test fixture<br/>card_status_events · load_runs")]
+    T -.->|"fallback if the DB is down"| S[("Agent snapshot<br/>dataset sample + test fixture")]
+    P["Snowflake CLEAN.agent_*<br/>→ Parquet + manifest (SHA-256)"] -->|"load_postgres.py<br/>checksums · contracts · keys · one transaction"| PG
+    P -->|"build_snapshot.py<br/>checksums · contracts · sample"| S
     E --> H["Structured handoff<br/>priority by rule"]
     API --> R[("Execution records<br/>one JSON line per turn")]
     H --> D["Agent desk /agent"]
 ```
 
 One Next.js service holds the UI and the API, deployed on Render from
-[`render.yaml`](render.yaml). The tools read the **agent snapshot**: 377 card
-holders, 708 cards and 1,497 transactions sampled from the stage 1 Parquet
-export (stratified, fixed seed, no names), plus the labeled test fixture. The
-build checks the export's checksums and the Pydantic contracts; the server
-re-checks the snapshot's checksum on start and refuses a file that changed
-outside the pipeline ([`pipelines/snapshot/`](data-engineering/pipelines/snapshot/)). The original team designed the production target
+[`render.yaml`](render.yaml). The tools read a **PostgreSQL operational
+store** (Neon, free tier) holding the whole stage 1 export: 91,084 card
+holders, 140,040 cards and 258,561 transactions, plus the labeled test
+fixture ([`pipelines/postgres/`](data-engineering/pipelines/postgres/)). The
+loader checks the export's checksums, validates every row against the Pydantic
+contracts and the keys, and replaces the source tables in one transaction,
+recording a `load_run` (checksums, Snowflake `query_id`s, row counts, export
+time). The agent never overwrites a source row: a block is appended to
+`card_status_events`, and a card's status is its latest event, else its source
+status. Every query is parametrized and scoped by the session's customer.
+
+If `DATABASE_URL` is not set or the database does not answer, the tools fall
+back to the **agent snapshot**: 377 card holders, 708 cards and 1,497
+transactions sampled from the same export (stratified, fixed seed, no names)
+plus the fixture, checksum-verified on start
+([`pipelines/snapshot/`](data-engineering/pipelines/snapshot/)). `/api/health`
+says which source is live and which load it serves. The original team designed the production target
 on AWS (Bedrock AgentCore, Lambda tools, DynamoDB, Cognito, API Gateway; see
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)). The prototype keeps the same
 contracts so each piece maps one to one: the session cookie → Cognito, the
-in-memory store → DynamoDB, `tools.ts` → Lambda tools, the log lines →
+in-memory conversation store → DynamoDB, `tools.ts` → Lambda tools, the log lines →
 CloudWatch.
 
 ### Why no LLM in the loop
@@ -146,19 +159,26 @@ for the keyword baseline ([`ml/intent/`](ml/intent/)).
 - **Access control:** signed httpOnly session cookies, 15-minute expiry;
   customers can only reach their own cards and conversations; agent endpoints
   need the agent role.
-- **Capacity limits:** one free instance with in-memory state. State is lost
-  on restart and the service sleeps when idle. Production needs a shared
+- **Capacity limits:** one free instance; conversations, handoffs and
+  execution records live in memory and are lost on restart, and the service
+  sleeps when idle. Card blocks persist in PostgreSQL. Production needs a shared
   store (DynamoDB), real identity (Cognito) and more than one instance.
-- **Data retention:** the prototype keeps nothing beyond the process
-  lifetime; records hold no card numbers or security answers.
+- **Data retention:** beyond the process lifetime the prototype keeps only
+  the card status events (card id, status, reason, time); records hold no card
+  numbers or security answers.
 
 ## Data and limitations
 
 - The dataset is synthetic and only in Spanish; Portuguese behaviour is tested
   on team-written cases only (Gap 1).
-- The agent snapshot holds a sample of the organizer's **synthetic** dataset
-  (no names, documents, contact data or full card numbers) plus a labeled,
-  team-generated test fixture. The full export stays out of the repository.
+- The operational store holds the organizer's **synthetic** dataset without
+  names, documents, contact data or full card numbers; the fallback snapshot in
+  the repository holds a sample of it. Both add a labeled, team-generated test
+  fixture. The Parquet export stays out of the repository.
+- The free database suspends after 5 idle minutes; the first query after that
+  waits for it to resume. If it fails mid-conversation, the tools retry on the
+  snapshot, where a dataset customer outside the sample has no cards (the
+  fixture customers exist in both).
 - Dataset transactions end on 2026-06-18; "recent" means the latest in the
   export, not today.
 - Security questions simulate step-up verification; they are not MFA.
@@ -176,6 +196,11 @@ npm run dev                      # http://localhost:3000
 # baseline mode for comparison:
 INTENT_MODEL=keywords npm run dev
 ```
+
+Load the operational store (PostgreSQL 15+; `DATABASE_URL` in an env file
+outside the repo): `pip install pandas pyarrow pydantic "psycopg[binary]" && python data-engineering/pipelines/postgres/load_postgres.py --source <export folder> --env-file <path to .env>`,
+then run the app with `DATABASE_URL` set. Load tests (throwaway database):
+`TEST_DATABASE_URL=... python -m pytest data-engineering/pipelines/postgres -q`.
 
 Rebuild the agent snapshot from the stage 1 export (Parquet files are not in
 the repo): `pip install pandas pyarrow pydantic && python data-engineering/pipelines/snapshot/build_snapshot.py --source <export folder>`.

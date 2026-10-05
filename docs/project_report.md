@@ -95,6 +95,16 @@ three design levers fix that.
   own manifest: source checksums, Snowflake `query_id`s, row counts, strata and
   a diff against the previous snapshot. The server re-checks that checksum on
   start and refuses a snapshot that changed outside the pipeline.
+- **The operational store:** [`load_postgres.py`](../data-engineering/pipelines/postgres/load_postgres.py)
+  loads the whole export (91,084 customers, 140,040 cards, 258,561
+  transactions) into PostgreSQL on Neon, the store the original team planned.
+  Gates before any write: checksums and row counts against the manifest, every
+  row against the contracts, unique keys and no orphan cards or transactions.
+  The source tables are replaced in one transaction from staging tables, so a
+  reader sees the old load or the new one, never a mix; `load_runs` records the
+  lineage (checksums, `query_id`s, row counts, export time). What the agent does
+  is appended to `card_status_events` and survives reloads. The snapshot stays
+  as the fallback when the database is not configured or not reachable.
 
 ### Update and freshness policy
 
@@ -108,18 +118,23 @@ production:
   loaded, so a re-run adds only new days; the clean layer is rebuilt from
   landing.
 - **Contract gate.** A file that breaks the contract goes to quarantine and
-  the export stops; the agent keeps the last good snapshot.
+  the export stops; the agent keeps serving the last good load.
 - **Window.** The agent subset keeps 6 months of card transactions (one `SET`
   in `04_agent_tables.sql`).
-- **Freshness check.** Each snapshot records its build time and the export
-  it came from; `/api/health` reports both, plus whether the checksum passed.
+- **Freshness check.** Each load and each snapshot records when it ran and
+  which export it came from; `/api/health` reports the live source, its last
+  `load_run` and the snapshot's checksum.
 
 **Update correctness, shown on a labeled test fixture**
 ([`test_snapshot.py`](../data-engineering/pipelines/snapshot/test_snapshot.py),
 4 tests, all passing): the same export always builds the same snapshot; a v2
 export with one card blocked and one new transaction yields a diff with
 exactly those two changes; an export altered after its manifest was written
-is refused; a row that breaks the contract is refused.
+is refused; a row that breaks the contract is refused. The Postgres load has
+its own ([`test_load_postgres.py`](../data-engineering/pipelines/postgres/test_load_postgres.py),
+3 tests, all passing): an altered export is refused without touching the
+database; loading the same export twice is a no-op; a v2 reload replaces the
+source rows and keeps the block the agent recorded before it.
 
 ## 5. The system and how it was measured
 
@@ -127,7 +142,8 @@ is refused; a row that breaks the contract is refused.
 - Learned component: intent classifier, macro-F1 0.77 vs. 0.59 for keyword
   rules on 102 held-out sentences ([`ml/intent/`](../ml/intent/)).
 - End to end: 35 held-out conversations (4 on dataset customers), 33 correct
-  vs. 26 for the baseline, 0 unsafe outcomes in both
+  vs. 26 for the baseline, 0 unsafe outcomes in both, with the same results
+  served from PostgreSQL and from the snapshot
   ([`banking-system/evaluation/`](../banking-system/evaluation/)).
 
 ## 6. Timeline
@@ -140,7 +156,7 @@ is refused; a row that breaks the contract is refused.
 | 28 September | Stage 1: contracts, cleaning and the agent subset export. |
 | 2 October | Roles change: the lead takes the AWS backend; the data engineer takes the frontend. The exploration evidence is merged. |
 | 3 October | Customer chat and agent desk UI in review. In the afternoon the lead formally withdraws after concluding that her circumstances did not allow her to continue; it is agreed that her contributions stay in the project with her credit. |
-| 5 October | The remaining members have also withdrawn. The data engineer finishes alone: business case (Q12), a new public repository with the full history, the rules engine and classifier, deployment, evaluation, the snapshot step that connects the stage 1 export to the agent, and this report. |
+| 5 October | The remaining members have also withdrawn. The data engineer finishes alone: business case (Q12), a new public repository with the full history, the rules engine and classifier, deployment, evaluation, the snapshot step that connects the stage 1 export to the agent, the PostgreSQL operational store with the snapshot as fallback, and this report. |
 
 The scope was adjusted to what one person could build and verify in a day.
 The AWS architecture stays as the documented route to production rather than

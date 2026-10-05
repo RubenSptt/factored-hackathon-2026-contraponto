@@ -6,3 +6,5 @@ python-dotenv>=1.2.3
 pandas>=2.2
 pyarrow>=17.0
 pydantic>=2.8
+# Postgres operational store (pipelines/postgres)
+psycopg[binary]>=3.2

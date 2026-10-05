@@ -15,7 +15,8 @@ cannot prove.
 | --- | --- | --- |
 | [`analysis/`](analysis/) | 0 · Exploration | Q01–Q12: the SQL that led to the workflow choice, each with its question, result, decision and Snowflake `query_id` |
 | [`pipelines/snowflake/`](pipelines/snowflake/) | 1 · Contracts and cleaning | Landing, profiling, typed clean tables, quarantine, the agent subset and its Parquet export |
-| [`pipelines/snapshot/`](pipelines/snapshot/) | 1 → agent | Turns the Parquet export into the agent's snapshot: checksums, contracts, stratified sample, lineage manifest, diff; update tests on a labeled fixture |
+| [`pipelines/postgres/`](pipelines/postgres/) | 1 → agent | Loads the whole export into the agent's PostgreSQL store: checksums, contracts, keys, one-transaction replace, `load_runs` lineage, append-only `card_status_events`; update tests |
+| [`pipelines/snapshot/`](pipelines/snapshot/) | 1 → agent (fallback) | Turns the Parquet export into the agent's snapshot: checksums, contracts, stratified sample, lineage manifest, diff; update tests on a labeled fixture |
 | [`contracts/agent_tables.py`](contracts/agent_tables.py) | 1 | Pydantic models for every exported table; the loader validates each row against them |
 | [`docs/profile_core.md`](docs/profile_core.md) | 1 | Profile of the five core tables: every cleaning rule traces back to a finding here |
 | [`docs/data_dictionary.md`](docs/data_dictionary.md) | 0–1 | The 13 source tables, their columns and their role in Card Support |
@@ -40,10 +41,11 @@ The agent subset is exported to `data/agent/` as Parquet files plus a
 | `agent_transactions` (last 6 months, card products) | 258,561 |
 | `agent_complaints` | 41,341 |
 
-The agent does not read these files directly: `pipelines/snapshot/build_snapshot.py`
+The agent does not read these files directly: `pipelines/postgres/load_postgres.py`
 verifies them against the manifest, validates them against the contracts and
-writes a sampled snapshot that the running agent loads (and re-verifies) on
-start. In production the same step would load DynamoDB instead.
+loads them into PostgreSQL (157 MB with indexes), and `pipelines/snapshot/build_snapshot.py`
+writes the sampled snapshot the agent falls back to. Complaints are not
+loaded: no agent tool reads them yet.
 
 ## Reproduce
 

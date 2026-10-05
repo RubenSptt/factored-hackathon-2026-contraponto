@@ -5,8 +5,18 @@ correct outcome in **33**, against **26** for the keyword baseline, with
 **0 unsafe outcomes** for both and no missed transfers to a human.
 
 Run on 2026-10-05 against `next dev` on one machine, intent model
-`intent-tfidf-lr-2026-10-05`, agent snapshot `b14c3d48b519`. Raw output:
-[`results/tfidf.json`](results/tfidf.json), [`results/keywords.json`](results/keywords.json).
+`intent-tfidf-lr-2026-10-05`, with each data source: the agent snapshot
+`b14c3d48b519` ([`results/tfidf.json`](results/tfidf.json),
+[`results/keywords.json`](results/keywords.json)) and the PostgreSQL store
+loaded with the full export ([`results/pg-tfidf.json`](results/pg-tfidf.json),
+[`results/pg-keywords.json`](results/pg-keywords.json)). A third run served
+by the Neon database, from a laptop in Colombia to the database in Oregon,
+gave the same outcomes ([`results/neon-tfidf.json`](results/neon-tfidf.json));
+only latency changes, p50 / p95 304 / 1,032 ms, because every tool call
+crosses the network. Outcomes are identical in all runs; the tables below hold
+for any of them. With the database stopped in the
+middle of a run, the tools fell back to the snapshot and the run still scored
+33/35 with 0 unsafe outcomes.
 
 ## Workload
 

@@ -4,7 +4,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-import { customers, demoCustomers } from "../../_lib/server/data";
+import { withRepository } from "../../_lib/server/repository";
 import { AGENT_COOKIE, CUSTOMER_COOKIE, issueToken, SESSION_TTL_SECONDS, verifyToken } from "../../_lib/server/session";
 
 const cookieOptions = {
@@ -20,7 +20,7 @@ export async function GET() {
   const jar = await cookies();
   const customer = verifyToken(jar.get(CUSTOMER_COOKIE)?.value, "customer");
   return NextResponse.json({
-    demo_customers: demoCustomers().map((c) => ({ id: c.customer_id, name: c.display_name, source: c.source })),
+    demo_customers: (await withRepository((r) => r.demoCustomers())).map((c) => ({ id: c.customer_id, name: c.display_name, source: c.source })),
     signed_in_as: customer.ok ? customer.claims.sub : null,
     expires_at: customer.ok ? new Date(customer.claims.exp * 1000).toISOString() : null,
   });
@@ -37,7 +37,9 @@ export async function POST(request: Request) {
     jar.set(AGENT_COOKIE, issueToken("agent-demo", "agent", ttl), { ...cookieOptions, maxAge: ttl });
     return NextResponse.json({ role: "agent" });
   }
-  const customer = customers().find((c) => c.customer_id === body.demo_customer);
+  const customer = typeof body.demo_customer === "string"
+    ? await withRepository((r) => r.getCustomer((body.demo_customer as string).slice(0, 64)))
+    : null;
   if (!customer) return NextResponse.json({ error: "unknown_demo_customer" }, { status: 400 });
   jar.set(CUSTOMER_COOKIE, issueToken(customer.customer_id, "customer", ttl), { ...cookieOptions, maxAge: SESSION_TTL_SECONDS });
   return NextResponse.json({ role: "customer", customer_id: customer.customer_id });
