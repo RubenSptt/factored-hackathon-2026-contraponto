@@ -6,8 +6,7 @@ import type { FormEvent, KeyboardEvent } from "react";
 import { cardSupportApi } from "../_lib/api";
 import type { ChatResponse, UiAction } from "../_lib/api";
 import { containsFullCardNumber } from "../_lib/card-number-guard";
-import { DEFAULT_LOCALE, dictionaries, isLocale, LOCALE_TAGS, LOCALES } from "../_lib/i18n";
-import type { Locale } from "../_lib/i18n";
+import { useLocale } from "../_lib/locale-context";
 import ActionCard from "./ActionCard";
 import type { Resolution } from "./ActionCard";
 import styles from "./ChatPanel.module.css";
@@ -34,7 +33,7 @@ function actionKey(action: UiAction): string | null {
 }
 
 export default function ChatPanel() {
-  const [locale, setLocale] = useState<Locale>(DEFAULT_LOCALE);
+  const { locale, t } = useLocale();
   const [sessionId, setSessionId] = useState(() => crypto.randomUUID());
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [resolutions, setResolutions] = useState<Record<string, Resolution>>({});
@@ -42,13 +41,6 @@ export default function ChatPanel() {
   const [isSending, setIsSending] = useState(false);
   const [notice, setNotice] = useState<Notice>(null);
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
-
-  const t = dictionaries[locale];
-
-  // Keep the document language in sync for screen readers and translators.
-  useEffect(() => {
-    document.documentElement.lang = LOCALE_TAGS[locale];
-  }, [locale]);
 
   useEffect(() => {
     endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -157,21 +149,6 @@ export default function ChatPanel() {
         </div>
 
         <div className={styles.headerControls}>
-          <div className={styles.localeSwitch} role="group" aria-label={t.languageLabel}>
-            {LOCALES.map((option) => (
-              <button
-                key={option}
-                type="button"
-                className={styles.localeButton}
-                aria-pressed={option === locale}
-                onClick={() => {
-                  if (isLocale(option)) setLocale(option);
-                }}
-              >
-                {dictionaries[option].localeName}
-              </button>
-            ))}
-          </div>
           {messages.length > 0 && (
             <button
               type="button"

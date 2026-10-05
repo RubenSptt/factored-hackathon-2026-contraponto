@@ -46,19 +46,27 @@ All three must pass. Stop `npm run dev` before `npm run build`.
 
 ```text
 app/
-├── layout.tsx                Root layout, fonts and metadata
-├── page.tsx                  Home route: renders the chat
-├── page.module.css
+├── layout.tsx                Root layout: locale provider and top navigation
+├── page.tsx                  /              Customer chat
+├── agent/
+│   ├── page.tsx              /agent         Human agent queue of escalated cases
+│   └── [caseId]/page.tsx     /agent/:id     Case detail (handoff)
 ├── _components/              UI components (private folder, not a route)
-│   ├── ChatPanel.tsx         Conversation, locale switch, composer, session
+│   ├── AppNav.tsx            Customer / agent switch and language switch
+│   ├── ChatPanel.tsx         Conversation, composer, session
 │   ├── ActionCard.tsx        Renders each structured UI action from the backend
+│   ├── AgentQueue.tsx        Triage table: priority first, then newest
+│   ├── CaseDetail.tsx        Verified facts, actions, flagged transactions, open questions
+│   ├── agent-format.ts       Shared formatting for the agent desk
 │   └── *.module.css
 └── _lib/                     Non-UI logic (private folder, not a route)
     ├── api/
     │   ├── contracts.ts      Request/response types shared with FastAPI
     │   ├── mock-api.ts       In-memory mock of the backend (demo scenario)
-    │   └── index.ts          Exports the client the UI uses
+    │   ├── mock-handoff-store.ts  Seed cases + cases created in the demo
+    │   └── index.ts          Exports the clients the UI uses
     ├── i18n.ts               Interface strings in Spanish and Portuguese
+    ├── locale-context.tsx    Shared language state across pages
     └── card-number-guard.ts  Blocks sending a full card number
 ```
 
@@ -73,9 +81,9 @@ the agent, AWS services or any tool directly.
 
 The FastAPI endpoints do not exist yet, so the UI runs against an in-memory
 mock (`app/_lib/api/mock-api.ts`) that follows the contract in
-`app/_lib/api/contracts.ts`. To connect the real backend, write an HTTP client
-that implements `CardSupportApi` and export it from `app/_lib/api/index.ts`;
-no component changes are needed.
+`app/_lib/api/contracts.ts`. To connect the real backend, write HTTP clients
+that implement `CardSupportApi` and `AgentDeskApi` and export them from
+`app/_lib/api/index.ts`; no component changes are needed.
 
 ### Contract (proposed, pending backend confirmation)
 
@@ -87,8 +95,14 @@ Field names are snake_case to match Pydantic models and the handoff JSON in
 | `POST /chat/messages` | `session_id`, `message`, `locale` | Customer message |
 | `POST /chat/verification` | `session_id`, `challenge_id`, `answer`, `locale` | Answer to a step-up question |
 | `POST /chat/confirmations` | `session_id`, `confirmation_id`, `decision`, `locale` | Confirm or cancel a sensitive action |
+| `GET /agent/handoffs` | — | Human agent: escalated cases, newest first |
+| `GET /agent/handoffs/{case_id}` | — | Human agent: one case |
 
-Every endpoint returns `{ reply, ui_actions }`: the agent's text plus a list of
+The two `/agent` endpoints return `HandoffCase` objects (`handoff`,
+`created_at`, `priority`, `status`, `customer_locale`) and require an agent
+role from the identity provider; customers can never call them.
+
+Every `/chat` endpoint returns `{ reply, ui_actions }`: the agent's text plus a list of
 structured actions the UI knows how to render.
 
 | `ui_actions[].type` | What the UI shows |
@@ -109,6 +123,17 @@ structured actions the UI knows how to render.
 4. Confirming returns a verified block result plus a human handoff; cancelling
    returns a handoff only.
 
+5. Open **Agente humano** in the top bar: the new case appears first in the
+   queue, next to three fictional seed cases. Open it to see the verified
+   facts, actions taken, flagged transactions and open questions. The view
+   never shows the conversation transcript.
+
+Priority follows a rule the backend should own (the mock mirrors it in
+`mock-handoff-store.ts`): unverified identity, or suspected fraud with the
+card still active, is **urgent**; a blocked card is **high**; anything else is
+**normal**. Cases created in the demo are saved in the browser's
+`localStorage`, so the agent view also works in another tab.
+
 All mock data is fictional; nothing is read from the hackathon dataset.
 
 ## Security rules for the frontend
@@ -125,8 +150,8 @@ All mock data is fictional; nothing is read from the hackathon dataset.
 ## Languages
 
 `app/_lib/i18n.ts` holds every interface string in Spanish (`es`, default) and
-Portuguese (`pt`). The locale switch changes the interface and the `lang`
-attribute of the page; the agent replies in the customer's language on its
+Portuguese (`pt`). The locale switch in the top bar changes the interface on
+every page and the `lang` attribute of the document; the agent replies in the customer's language on its
 own. Add new strings to both dictionaries: TypeScript fails the build if one
 is missing.
 
@@ -136,4 +161,4 @@ is missing.
 | --- | --- | --- |
 | `feature/frontend-chat-ui` | Chat, locale switch, card-number guard, API contract and mock, identity check, transaction review, block confirmation, verified result and handoff summary | Ready for review |
 | `feature/frontend-card-dashboard` | Card list and card details | Planned |
-| `feature/frontend-agent-tickets` | Human agent ticket queue and detail | Planned |
+| `feature/frontend-agent-tickets` | Human agent queue and case detail, shared navigation and language | Ready for review |

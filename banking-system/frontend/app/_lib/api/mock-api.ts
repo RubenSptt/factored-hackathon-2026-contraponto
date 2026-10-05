@@ -10,7 +10,9 @@
 // the backend tools.
 
 import type { Locale } from "../i18n";
+import { allHandoffs, saveHandoff } from "./mock-handoff-store";
 import type {
+  AgentDeskApi,
   CardSupportApi,
   ChatRequest,
   ChatResponse,
@@ -114,6 +116,30 @@ const replies = {
   },
 } satisfies Record<Locale, Record<string, string | ((caseId: string) => string)>>;
 
+// Free text written into the handoff, in the language of the conversation.
+const handoffText = {
+  es: {
+    defaultRisk: "El cliente reporta el robo de su billetera y una compra que no hizo.",
+    whichTransactions: "¿Cuáles de los movimientos revisados no reconoce el cliente?",
+    failedRisk:
+      "La verificación de identidad falló mientras el cliente reportaba el robo de su tarjeta. No se ejecutó ninguna acción.",
+    verifyIdentity: "Verificar la identidad del cliente por un canal aprobado.",
+    decideBlock: "Decidir si se bloquea la tarjeta una vez confirmada la identidad.",
+    declined:
+      "El cliente rechazó el bloqueo preventivo: confirmar si todavía tiene la tarjeta en su poder.",
+  },
+  pt: {
+    defaultRisk: "O cliente relata o roubo da carteira e uma compra que não fez.",
+    whichTransactions: "Quais das movimentações revisadas o cliente não reconhece?",
+    failedRisk:
+      "A verificação de identidade falhou enquanto o cliente relatava o roubo do cartão. Nenhuma ação foi executada.",
+    verifyIdentity: "Verificar a identidade do cliente por um canal aprovado.",
+    decideBlock: "Decidir se o cartão deve ser bloqueado após confirmar a identidade.",
+    declined:
+      "O cliente recusou o bloqueio preventivo: confirmar se ainda está com o cartão.",
+  },
+} satisfies Record<Locale, Record<string, string>>;
+
 const securityQuestion: Record<Locale, string> = {
   es: "¿En qué ciudad abriste tu cuenta con el banco?",
   pt: "Em qual cidade você abriu sua conta no banco?",
@@ -147,11 +173,15 @@ function getSession(sessionId: string): Session {
   return created;
 }
 
-function buildHandoff(session: Session, overrides: Partial<HumanHandoff>): HumanHandoff {
+function buildHandoff(
+  session: Session,
+  locale: Locale,
+  overrides: Partial<HumanHandoff>,
+): HumanHandoff {
   const caseId = newCaseId();
   session.caseId = caseId;
   session.stage = "closed";
-  return {
+  const handoff: HumanHandoff = {
     case_id: caseId,
     customer_verified: true,
     intent: "stolen_card",
@@ -159,10 +189,12 @@ function buildHandoff(session: Session, overrides: Partial<HumanHandoff>): Human
     card_blocked: false,
     suspicious_transactions: [],
     actions_taken: [],
-    risk_reason: "Customer reports a stolen wallet and a purchase they did not make.",
-    unresolved_questions: ["Which of the listed transactions does the customer not recognize?"],
+    risk_reason: handoffText[locale].defaultRisk,
+    unresolved_questions: [handoffText[locale].whichTransactions],
     ...overrides,
   };
+  saveHandoff(handoff, locale);
+  return handoff;
 }
 
 async function simulateLatency(): Promise<void> {
@@ -240,16 +272,13 @@ export const mockCardSupportApi: CardSupportApi = {
 
     const normalized = normalize(answer).trim();
     if (normalized.length < 2 || UNKNOWN_ANSWER_PATTERN.test(normalized)) {
-      const handoff = buildHandoff(session, {
+      const text = handoffText[locale];
+      const handoff = buildHandoff(session, locale, {
         customer_verified: false,
         card_last_four: null,
-        risk_reason:
-          "Step-up verification failed while the customer reported a stolen card. No action was taken.",
+        risk_reason: text.failedRisk,
         actions_taken: ["identity_verification_failed"],
-        unresolved_questions: [
-          "Verify the customer's identity through an approved channel.",
-          "Decide whether to block the card once identity is confirmed.",
-        ],
+        unresolved_questions: [text.verifyIdentity, text.decideBlock],
       });
       return {
         reply: r.verificationFailed,
@@ -285,17 +314,15 @@ export const mockCardSupportApi: CardSupportApi = {
     }
 
     if (decision === "cancel") {
-      const handoff = buildHandoff(session, {
+      const text = handoffText[locale];
+      const handoff = buildHandoff(session, locale, {
         actions_taken: ["identity_verified", "transactions_reviewed", "block_declined_by_customer"],
-        unresolved_questions: [
-          "Which of the listed transactions does the customer not recognize?",
-          "The customer declined the preventive block: confirm whether the card is still in their possession.",
-        ],
+        unresolved_questions: [text.whichTransactions, text.declined],
       });
       return { reply: r.cancelled, ui_actions: [{ type: "handoff_created", handoff }] };
     }
 
-    const handoff = buildHandoff(session, {
+    const handoff = buildHandoff(session, locale, {
       card_blocked: true,
       actions_taken: [
         "identity_verified",
@@ -316,5 +343,17 @@ export const mockCardSupportApi: CardSupportApi = {
         { type: "handoff_created", handoff },
       ],
     };
+  },
+};
+
+export const mockAgentDeskApi: AgentDeskApi = {
+  async listHandoffs() {
+    await simulateLatency();
+    return allHandoffs();
+  },
+
+  async getHandoff(caseId: string) {
+    await simulateLatency();
+    return allHandoffs().find((item) => item.handoff.case_id === caseId) ?? null;
   },
 };
