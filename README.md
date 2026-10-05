@@ -104,6 +104,13 @@ fact the tools did not return. Cost per conversation is effectively zero. An
 LLM can be added later as a fallback for low-confidence messages without
 moving any permission into the prompt.
 
+**Next step: retrieval before generation.** Policy questions (card
+replacement times, how a dispute works) would be answered by retrieving
+passages from cited policy documents, stored with pgvector in the same Neon
+database, and returning them verbatim with their source. Retrieval needs no
+generated text, so it can be measured the same way the agent is measured
+today; generation would only be considered once there is a way to validate it.
+
 ## Controlled automation
 
 | Request | What the system does | Rule |
