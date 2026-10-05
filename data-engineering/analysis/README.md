@@ -10,7 +10,8 @@ SQL from the exploration that led the team to choose Card Support and define the
 
 1. `00_setup/00_context_and_stage.sql`: context, stage (placeholders, no keys) and file formats.
 2. `00_setup/01_exploratory_load.sql`: exploratory tables in `PUBLIC`.
-3. `Q01` to `Q11`, in any order.
+3. `Q01` to `Q12`, in any order.
+4. `business_case_estimate.py`: turns the Q12 results and the stated assumptions into the business case (`docs/business_case.md`).
 
 ## Index
 
@@ -27,6 +28,7 @@ SQL from the exploration that led the team to choose Card Support and define the
 | Q09 | Does satisfaction change by category? | CSAT from 2.43 (Complaint) to 2.91 (Transactional) | Business problem |
 | Q10 | Are unrecognized charges card-related? | Linked product is random; 33.8% have none | Business problem |
 | Q11 | What columns does each table have? | 13 tables, one stable header each | `docs/data_dictionary.md` |
+| Q12 | How many card contacts could the agent contain, at what cost? | Técnico 360.8 s, 59.4% simple pool; `mentioned_products` is noise; `origin_interaction_id` always null | `docs/business_case.md`, Gap 12 |
 
 ## Missing
 
