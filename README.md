@@ -20,14 +20,20 @@ prompt text.
 How the problem, the data and the design were chosen, with a timeline:
 **[docs/project_report.md](docs/project_report.md)**.
 
-| Ask from the brief | Where it is |
+Where each ask of the [challenge](https://www.factored.ai/careers/ai-data-hackathon) is answered:
+
+| What the challenge asks | Where it is answered |
 | --- | --- |
+| Understand complex customer interactions | Learned intent classifier in Spanish and Portuguese, clarifying questions and abstention ([controlled automation](#controlled-automation), [`ml/intent/`](ml/intent/)) |
+| Work safely with data and tools | Every precondition enforced in the tools ([`tools.ts`](banking-system/frontend/app/_lib/server/tools.ts)); parametrized queries scoped to the session's customer ([`repository.ts`](banking-system/frontend/app/_lib/server/repository.ts)) |
+| Automate workflows | Block a card end to end: verify, confirm, act, re-read ([demo](#demo-in-two-minutes)) |
+| Involve human agents when needed | Handoff rules and priority ([controlled automation](#controlled-automation)); agent desk at `/agent` |
+| Privacy, explainability, fairness, reliability, scalability | [Designed for production](#designed-for-production) |
+| Explicit trade-offs: autonomy, accuracy, latency, cost, human oversight | [Trade-offs](#trade-offs) |
+| Where AI is appropriate and where deterministic logic is preferable | [Why no LLM in the loop](#why-no-llm-in-the-loop) |
+| How the system is evaluated for quality and safety | [Results](#results) and the [evaluation](banking-system/evaluation/README.md): 35 held-out conversations, baseline vs. proposed |
 | A problem supported by data | [Workflow selection](docs/workflow_selection.md), [data gaps](docs/data_gaps.md), [business case](docs/business_case.md), SQL in [`data-engineering/analysis/`](data-engineering/analysis/) |
-| A functioning AI system | [`app/_lib/server/`](banking-system/frontend/app/_lib/server/) (engine, tools, sessions) behind [`app/api/`](banking-system/frontend/app/api/) |
-| Controlled automation | [Policy](#controlled-automation) below; preconditions enforced in [`tools.ts`](banking-system/frontend/app/_lib/server/tools.ts) |
-| Sound data and ML practice | Snowflake pipeline with contracts and quality flags, loaded whole into a PostgreSQL operational store with lineage and an append-only audit, and a verified snapshot as fallback; update tests for both ([`data-engineering/`](data-engineering/)); learned component in [`ml/intent/`](ml/intent/) |
-| Measured quality and failure handling | [Evaluation](banking-system/evaluation/README.md): 35 held-out conversations, baseline vs. proposed |
-| A credible route to operation | [Execution records, retries, fallback](#operation) and the [AWS target architecture](docs/ARCHITECTURE.md) |
+| The data engineering behind it | Snowflake pipeline with contracts, PostgreSQL operational store with lineage and an append-only audit, verified snapshot as fallback, update tests ([`data-engineering/`](data-engineering/)) |
 
 ## Demo in two minutes
 
@@ -43,7 +49,7 @@ Other sessions in the picker:
 
 - **Dataset customers** (`CLI-…`): real records from the organizer's synthetic
   dataset, taken from the stage 1 export: one with a transaction flagged by
-  `fraud_score ≥ 35`, one with a blocked card, one with four cards. Their
+  `fraud_score ≥ 35`, one with a blocked card, one with several cards. Their
   simulated security answer is their country (shown in the picker).
 - **Test fixture** (`C-…`): **C-1002 João** (Portuguese), **C-1003 Lucía**
   (the block service fails on purpose: bounded retries, no false claim, urgent
@@ -153,26 +159,53 @@ mean zero risk.
 Intent classifier alone, 102 held-out sentences: macro-F1 **0.77** vs. **0.59**
 for the keyword baseline ([`ml/intent/`](ml/intent/)).
 
-## Operation
+## Designed for production
 
-- **Execution records:** every turn writes one JSON line (trace id, intent,
+- **Privacy.** The agent's data holds no names, identity documents, birth
+  dates, contact data, income or credit scores, and only the last four digits
+  of a card ([contracts](data-engineering/contracts/agent_tables.py)). A full
+  card number typed in the chat is refused. Requests never carry a customer
+  id: the signed httpOnly session cookie (15-minute expiry) decides whose data
+  can be read. Execution records hold no card numbers or security answers;
+  beyond the process lifetime the prototype keeps only card status events
+  (card id, status, reason, time). Credentials and the Parquet export stay out
+  of the repository.
+- **Explainability.** Every turn writes one JSON line: trace id, intent,
   confidence, model version, each tool call with attempts and latency, the
-  rules that fired, the outcome). Agents read them at `GET /api/agent/records`.
-  They explain each decision from rules and tool results; there is no hidden
-  reasoning to audit.
-- **Reliability:** bounded retries (3 attempts, exponential backoff) on
-  transient tool failures; any unexpected error falls back to an urgent
-  handoff without claiming an action.
-- **Access control:** signed httpOnly session cookies, 15-minute expiry;
-  customers can only reach their own cards and conversations; agent endpoints
-  need the agent role.
-- **Capacity limits:** one free instance; conversations, handoffs and
-  execution records live in memory and are lost on restart, and the service
-  sleeps when idle. Card blocks persist in PostgreSQL. Production needs a shared
-  store (DynamoDB), real identity (Cognito) and more than one instance.
-- **Data retention:** beyond the process lifetime the prototype keeps only
-  the card status events (card id, status, reason, time); records hold no card
-  numbers or security answers.
+  rules that fired and the outcome (`GET /api/agent/records`, agent role).
+  Replies are templates filled with tool results, so each answer traces back
+  to a rule and a record; there is no hidden reasoning to audit. A human
+  receives verified facts, actions taken and open questions, not a transcript.
+- **Fairness.** Decisions depend on the request, card ownership, step-up
+  verification, confirmation and `fraud_score`; never on country, segment or
+  any personal attribute (country and segment only label the demo picker, and
+  country is the simulated security answer for dataset customers). Quality is
+  measured per language: classifier macro-F1 0.74 in Spanish and 0.80 in
+  Portuguese; end to end 20/22 and 13/13. Limit: one person wrote the test
+  sentences, so regional phrasing and dialects are not covered yet.
+- **Reliability.** Transient tool failures get three attempts with backoff,
+  then an urgent handoff that never claims the action. If the database fails,
+  the tools fall back to the verified snapshot: with the database stopped
+  mid-run the evaluation still scored 33/35 with 0 unsafe outcomes. Data that
+  fails its checksum or contract is refused, and a load is all or nothing.
+- **Scalability.** The tools are stateless reads against PostgreSQL (p50 /
+  p95 210 / 232 ms on the deployed service, measured from Colombia), and the chosen workflow keeps
+  conversations short. Today's limit: one free instance with conversations,
+  handoffs and records in memory (lost on restart; the instance sleeps after
+  15 idle minutes). Production moves that state to DynamoDB, identity to
+  Cognito and the API behind API Gateway with more than one instance, as in
+  the [AWS target architecture](docs/ARCHITECTURE.md).
+
+## Trade-offs
+
+| Trade-off | What we chose | What it costs | Evidence |
+| --- | --- | --- | --- |
+| Autonomy vs. human oversight | The agent acts alone only to protect (block a card, after step-up and confirmation); disputes, unblocks and failed verification go to a human | Fewer cases closed without a person: 10/19 in-scope contained | 0/9 missed transfers, 0/35 unsafe |
+| Accuracy vs. autonomy | Below 0.40 confidence the agent asks instead of acting | About 13% of held-out sentences get a clarifying question (coverage 87%) | 86.5% intent accuracy when it answers; N08 was right but asked |
+| Latency | Deterministic rules and tools, no model call per turn | Less flexible wording than a generative model | p50 / p95 210 / 232 ms deployed, measured from Colombia |
+| Cost | No paid model; free hosting tiers | Cold start of about 50 s after 15 idle minutes | USD 0 model spend per conversation; projection USD 0.77 vs 2.06 per resolution ([business case](docs/business_case.md)) |
+| Flexibility vs. verifiability | Template replies filled with tool results; no LLM in the loop | Out-of-scope questions get a polite refusal, not an answer | The agent cannot state a fact the tools did not return |
+| Freshness vs. simplicity | Daily batch load with lineage; card status changes are live events | Transactions are as fresh as the last export (ends 2026-06-18) | `/api/health` and the agent desk show the export date and load run |
 
 ## Data and limitations
 
